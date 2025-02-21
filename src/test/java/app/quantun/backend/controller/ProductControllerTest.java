@@ -26,6 +26,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Test class for the ProductController.
+ * This class contains unit tests for the ProductController.
+ */
 @WebMvcTest(ProductController.class)
 public class ProductControllerTest {
 
@@ -58,6 +62,10 @@ public class ProductControllerTest {
                 .build();
     }
 
+    /**
+     * Test for retrieving all products.
+     * This test verifies that the getAllProducts endpoint returns a list of products.
+     */
     @Test
     void testGetAllProducts() throws Exception {
         List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
@@ -72,25 +80,15 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Test Product"));
     }
 
+    /**
+     * Test for retrieving a product by its ID.
+     * This test verifies that the getProductById endpoint returns the correct product.
+     */
     @Test
     void testGetProductById() throws Exception {
-/*
         Long productId = 1L;
 
         // Wrap the response in Optional.of()
-        when(productService.getProductById(productId)).thenReturn(Optional.of(sampleProductResponse));
-
-        mockMvc.perform(get("/api/products/{id}", productId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Test Product"));
-*/
-
-        Long productId = 1L;
-
-// Wrap the response in Optional.of()
         when(productService.getProductById(productId)).thenReturn(Optional.of(sampleProductResponse));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/products/{id}", productId)
@@ -101,6 +99,10 @@ public class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Test Product"));
     }
 
+    /**
+     * Test for creating a new product.
+     * This test verifies that the createProduct endpoint creates a new product.
+     */
     @Test
     void testCreateProduct() throws Exception {
         when(productService.createProduct(any(ProductRequestDTO.class)))
@@ -115,6 +117,10 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.name").value("Test Product"));
     }
 
+    /**
+     * Test for updating an existing product.
+     * This test verifies that the updateProduct endpoint updates the product details.
+     */
     @Test
     void testUpdateProduct() throws Exception {
         Long productId = 1L;
@@ -131,6 +137,10 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$.name").value("Test Product"));
     }
 
+    /**
+     * Test for searching products by name.
+     * This test verifies that the searchProductsByName endpoint returns matching products.
+     */
     @Test
     void testSearchProductsByName() throws Exception {
         String searchName = "Test";
@@ -146,6 +156,10 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].name").value("Test Product"));
     }
 
+    /**
+     * Test for retrieving products under a specific price.
+     * This test verifies that the getProductsUnderPrice endpoint returns products below the given price.
+     */
     @Test
     void testGetProductsUnderPrice() throws Exception {
         BigDecimal maxPrice = BigDecimal.valueOf(20);
@@ -161,6 +175,10 @@ public class ProductControllerTest {
                 .andExpect(jsonPath("$[0].price").value(19.99));
     }
 
+    /**
+     * Test for retrieving products that are in stock.
+     * This test verifies that the getInStockProducts endpoint returns products that are in stock.
+     */
     @Test
     void testGetInStockProducts() throws Exception {
         List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
