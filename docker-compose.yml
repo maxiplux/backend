@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  oracle-xe:
+    image: container-registry.oracle.com/database/express:latest
+
+    container_name: oracle-xe
+    environment:
+      - ORACLE_PWD=admin
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+#    healthcheck:
+#      test: ["CMD", "sqlplus", "-L", "sys/admin@//localhost:1521/XE as sysdba", "@healthcheck.sql"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"  # External access on localhost:9092
+    environment:
+      # Unique broker ID for this single-node setup
+      KAFKA_BROKER_ID: 1
+
+      # Define three listeners:
+      # • PLAINTEXT on port 29092 for internal (container-to-container) communication
+      # • CONTROLLER on port 29093 for internal KRaft controller communication
+      # • PLAINTEXT_HOST on port 9092 for external (host) clients
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092
+
+      # Advertised listeners tell clients how to connect:
+      # Use kafka:29092 for Docker-internal communication and localhost:9092 for host connections
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+
+      # Map listener names to security protocols (all set to PLAINTEXT)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      # Specify the listener used for inter-broker communication
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # Minimal replication and rebalancing settings for a single broker
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      # Enable KRaft mode: This node acts as both controller and broker.
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+
+      # Directory for Kafka logs (can be any writable directory)
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+volumes:
+  oracle-data:
