@@ -31,5 +31,8 @@ public class Product {
     private BigDecimal price;
 
     private boolean inStock;
+
+    //stock quantity
+    private int stock;
 }
 

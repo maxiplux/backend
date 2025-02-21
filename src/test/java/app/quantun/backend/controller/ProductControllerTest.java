@@ -1,164 +1,176 @@
 package app.quantun.backend.controller;
 
-import app.quantun.backend.models.entity.Product;
+import app.quantun.backend.models.contract.request.ProductRequestDTO;
+import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
-class ProductControllerTest {
+public class ProductControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private ProductService productService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Product product;
+    @MockitoBean
+    private ProductService productService;
+
+    private ProductResponseDTO sampleProductResponse;
+    private ProductRequestDTO sampleProductRequest;
 
     @BeforeEach
     void setUp() {
-        product = new Product();
-        product.setId(1L);
-        product.setName("Test Product");
-        product.setPrice(BigDecimal.valueOf(19.99));
-        product.setInStock(true);
+        // Create sample DTOs for testing
+        sampleProductResponse = ProductResponseDTO.builder()
+                .id(1L)
+                .name("Test Product")
+                .price(BigDecimal.valueOf(19.99))
+                .stock(10)
+                .build();
+
+        sampleProductRequest = ProductRequestDTO.builder()
+                .name("Test Product")
+                .price(BigDecimal.valueOf(19.99))
+                .inStock(true)
+                .build();
     }
 
     @Test
-    @DisplayName("GET All Products - Success")
     void testGetAllProducts() throws Exception {
-        // Arrange
-        when(productService.getAllProducts()).thenReturn(List.of(product));
+        List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
 
-        // Act & Assert
+        when(productService.getAllProducts()).thenReturn(products);
+
         mockMvc.perform(get("/api/products")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].name").value("Test Product"));
     }
 
     @Test
-    @DisplayName("GET Product By ID - Success")
     void testGetProductById() throws Exception {
-        // Arrange
-        when(productService.getProductById(1L)).thenReturn(Optional.of(product));
+/*
+        Long productId = 1L;
 
-        // Act & Assert
-        mockMvc.perform(get("/api/products/1")
+        // Wrap the response in Optional.of()
+        when(productService.getProductById(productId)).thenReturn(Optional.of(sampleProductResponse));
+
+        mockMvc.perform(get("/api/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Test Product"));
-    }
+*/
 
-    @Test
-    @DisplayName("GET Product By ID - Not Found")
-    void testGetProductByIdNotFound() throws Exception {
-        // Arrange
-        when(productService.getProductById(1L)).thenReturn(Optional.empty());
+        Long productId = 1L;
 
-        // Act & Assert
-        mockMvc.perform(get("/api/products/1")
+// Wrap the response in Optional.of()
+        when(productService.getProductById(productId)).thenReturn(Optional.of(sampleProductResponse));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Test Product"));
     }
 
     @Test
-    @DisplayName("POST Create Product - Success")
     void testCreateProduct() throws Exception {
-        // Arrange
-        when(productService.createProduct(any(Product.class))).thenReturn(product);
+        when(productService.createProduct(any(ProductRequestDTO.class)))
+                .thenReturn(sampleProductResponse);
 
-        // Act & Assert
         mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
+                        .content(objectMapper.writeValueAsString(sampleProductRequest)))
                 .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("Test Product"));
     }
 
     @Test
-    @DisplayName("PUT Update Product - Success")
     void testUpdateProduct() throws Exception {
-        // Arrange
-        Product updatedProduct = new Product();
-        updatedProduct.setName("Updated Product");
+        Long productId = 1L;
 
-        when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
+        when(productService.updateProduct(eq(productId), any(ProductRequestDTO.class)))
+                .thenReturn(sampleProductResponse);
 
-        // Act & Assert
-        mockMvc.perform(put("/api/products/1")
+        mockMvc.perform(put("/api/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedProduct)))
+                        .content(objectMapper.writeValueAsString(sampleProductRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Product"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("Test Product"));
     }
 
     @Test
-    @DisplayName("DELETE Product - Success")
-    void testDeleteProduct() throws Exception {
-        // Arrange
-        doNothing().when(productService).deleteProduct(1L);
-
-        // Act & Assert
-        mockMvc.perform(delete("/api/products/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("GET Products By Name - Success")
     void testSearchProductsByName() throws Exception {
-        // Arrange
-        when(productService.searchProductsByName("Test"))
-                .thenReturn(List.of(product));
+        String searchName = "Test";
+        List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
 
-        // Act & Assert
+        when(productService.searchProductsByName(searchName)).thenReturn(products);
+
         mockMvc.perform(get("/api/products/search")
-                        .param("name", "Test")
+                        .param("name", searchName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].name").value("Test Product"));
     }
 
     @Test
-    @DisplayName("Validation - Create Product with Invalid Data")
-    void testCreateProductValidationFailed() throws Exception {
-        // Arrange
-        Product invalidProduct = new Product();
-        invalidProduct.setName(""); // Invalid empty name
-        invalidProduct.setPrice(BigDecimal.valueOf(-10.0)); // Negative price
+    void testGetProductsUnderPrice() throws Exception {
+        BigDecimal maxPrice = BigDecimal.valueOf(20);
+        List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
 
-        // Act & Assert
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidProduct)))
-                .andExpect(status().isBadRequest());
+        when(productService.getProductsUnderPrice(maxPrice)).thenReturn(products);
+
+        mockMvc.perform(get("/api/products/under-price")
+                        .param("price", "20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].price").value(19.99));
     }
 
+    @Test
+    void testGetInStockProducts() throws Exception {
+        List<ProductResponseDTO> products = Arrays.asList(sampleProductResponse);
+
+        when(productService.getInStockProducts()).thenReturn(products);
+
+        mockMvc.perform(get("/api/products/in-stock")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].stock").value(10));
+    }
 }

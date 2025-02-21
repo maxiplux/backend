@@ -29,4 +29,5 @@ public class ProductRequestDTO {
     private BigDecimal price;
 
     private boolean inStock;
+    private int stock;
 }
