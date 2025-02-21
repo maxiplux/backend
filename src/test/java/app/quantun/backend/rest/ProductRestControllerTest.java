@@ -1,5 +1,6 @@
-package app.quantun.backend.controller;
+package app.quantun.backend.rest;
 
+import app.quantun.backend.controller.ProductController;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.service.ProductService;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This class contains unit tests for the ProductController.
  */
 @WebMvcTest(ProductController.class)
-public class ProductControllerTest {
+public class ProductRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

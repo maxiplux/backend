@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "Operations for managing products")
-public class ProductController {
+public class ProductRestController {
     private final ProductService productService;
 
     @GetMapping
