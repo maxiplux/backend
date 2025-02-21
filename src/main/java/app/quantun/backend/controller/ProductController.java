@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Controller class for managing products.
+ * This class provides endpoints for CRUD operations on products.
+ */
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
@@ -26,6 +30,11 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    /**
+     * Retrieve a list of all products.
+     *
+     * @return a list of ProductResponseDTO
+     */
     @GetMapping
     @Operation(summary = "Get all products",
             description = "Retrieve a list of all products",
@@ -39,6 +48,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    /**
+     * Retrieve a specific product by its ID.
+     *
+     * @param id the ID of the product
+     * @return the ProductResponseDTO
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get product by ID",
             description = "Retrieve a specific product by its ID",
@@ -56,6 +71,12 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Add a new product to the system.
+     *
+     * @param productRequestDTO the details of the product to be created
+     * @return the created ProductResponseDTO
+     */
     @PostMapping
     @Operation(summary = "Create a new product",
             description = "Add a new product to the system",
@@ -71,6 +92,13 @@ public class ProductController {
                 .body(productService.createProduct(productRequestDTO));
     }
 
+    /**
+     * Update details of an existing product.
+     *
+     * @param id the ID of the product to be updated
+     * @param productRequestDTO the updated product details
+     * @return the updated ProductResponseDTO
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing product",
             description = "Update details of an existing product",
@@ -87,6 +115,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(id, productRequestDTO));
     }
 
+    /**
+     * Remove a product from the system.
+     *
+     * @param id the ID of the product to be deleted
+     * @return a ResponseEntity with no content
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a product",
             description = "Remove a product from the system",
@@ -100,6 +134,12 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Find products containing the given name.
+     *
+     * @param name the name to search for
+     * @return a list of ProductResponseDTO
+     */
     @GetMapping("/search")
     @Operation(summary = "Search products by name",
             description = "Find products containing the given name",
@@ -114,6 +154,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProductsByName(name));
     }
 
+    /**
+     * Retrieve products priced below a given value.
+     *
+     * @param price the maximum price
+     * @return a list of ProductResponseDTO
+     */
     @GetMapping("/under-price")
     @Operation(summary = "Get products under a specific price",
             description = "Retrieve products priced below a given value",
@@ -128,6 +174,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductsUnderPrice(price));
     }
 
+    /**
+     * Retrieve all products that are currently in stock.
+     *
+     * @return a list of ProductResponseDTO
+     */
     @GetMapping("/in-stock")
     @Operation(summary = "Get products in stock",
             description = "Retrieve all products that are currently in stock",

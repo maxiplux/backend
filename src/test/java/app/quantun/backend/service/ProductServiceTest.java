@@ -20,8 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-@ExtendWith(MockitoExtension.class)  // Add this annotation
 
+/**
+ * Test class for the ProductService.
+ * This class contains unit tests for the ProductService.
+ */
+@ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
@@ -57,6 +61,10 @@ class ProductServiceTest {
         testProductResponseDTO.setInStock(true);
     }
 
+    /**
+     * Test for retrieving all products.
+     * This test verifies that the getAllProducts method returns a list of products.
+     */
     @Test
     void testGetAllProducts() {
         // Arrange
@@ -74,6 +82,10 @@ class ProductServiceTest {
         verify(productRepository).findAll();
     }
 
+    /**
+     * Test for retrieving a product by its ID.
+     * This test verifies that the getProductById method returns the correct product.
+     */
     @Test
     void testGetProductById_Existing() {
         // Arrange
@@ -88,6 +100,10 @@ class ProductServiceTest {
         assertEquals(testProductResponseDTO, result.get());
     }
 
+    /**
+     * Test for retrieving a product by its ID when the product is not found.
+     * This test verifies that the getProductById method returns an empty Optional.
+     */
     @Test
     void testGetProductById_NotFound() {
         // Arrange
@@ -100,6 +116,10 @@ class ProductServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * Test for creating a new product.
+     * This test verifies that the createProduct method creates a new product.
+     */
     @Test
     void testCreateProduct() {
         // Arrange
@@ -116,6 +136,10 @@ class ProductServiceTest {
         verify(productRepository).save(testProduct);
     }
 
+    /**
+     * Test for updating an existing product.
+     * This test verifies that the updateProduct method updates the product details.
+     */
     @Test
     void testUpdateProduct_Existing() {
         // Arrange
@@ -136,6 +160,10 @@ class ProductServiceTest {
         verify(productRepository).save(existingProduct);
     }
 
+    /**
+     * Test for updating a product when the product is not found.
+     * This test verifies that the updateProduct method throws a RuntimeException.
+     */
     @Test
     void testUpdateProduct_NotFound() {
         // Arrange
@@ -147,6 +175,10 @@ class ProductServiceTest {
         );
     }
 
+    /**
+     * Test for deleting an existing product.
+     * This test verifies that the deleteProduct method deletes the product.
+     */
     @Test
     void testDeleteProduct_Existing() {
         // Arrange
@@ -159,6 +191,10 @@ class ProductServiceTest {
         verify(productRepository).delete(testProduct);
     }
 
+    /**
+     * Test for deleting a product when the product is not found.
+     * This test verifies that the deleteProduct method throws a RuntimeException.
+     */
     @Test
     void testDeleteProduct_NotFound() {
         // Arrange
@@ -170,6 +206,10 @@ class ProductServiceTest {
         );
     }
 
+    /**
+     * Test for searching products by name.
+     * This test verifies that the searchProductsByName method returns matching products.
+     */
     @Test
     void testSearchProductsByName() {
         // Arrange
@@ -186,6 +226,10 @@ class ProductServiceTest {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Test for retrieving products under a specific price.
+     * This test verifies that the getProductsUnderPrice method returns products below the given price.
+     */
     @Test
     void testGetProductsUnderPrice() {
         // Arrange
@@ -203,6 +247,10 @@ class ProductServiceTest {
         assertEquals(1, result.size());
     }
 
+    /**
+     * Test for retrieving products that are in stock.
+     * This test verifies that the getInStockProducts method returns products that are in stock.
+     */
     @Test
     void testGetInStockProducts() {
         // Arrange
