@@ -70,22 +70,30 @@ public class ProductService {
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         return productRepository.findById(id)
                 .map(existingProduct -> {
-                    // Map only non-null fields
-                    if (productRequestDTO.getName() != null) {
-                        existingProduct.setName(productRequestDTO.getName());
-                    }
-                    if (productRequestDTO.getDescription() != null) {
-                        existingProduct.setDescription(productRequestDTO.getDescription());
-                    }
-                    if (productRequestDTO.getPrice() != null) {
-                        existingProduct.setPrice(productRequestDTO.getPrice());
-                    }
-                    existingProduct.setInStock(productRequestDTO.isInStock());
-
+                    updateProductFields(existingProduct, productRequestDTO);
                     Product updatedProduct = productRepository.save(existingProduct);
                     return modelMapper.map(updatedProduct, ProductResponseDTO.class);
                 })
                 .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
+    }
+
+    /**
+     * Update the fields of an existing product with the provided details.
+     *
+     * @param existingProduct the existing product to be updated
+     * @param productRequestDTO the updated product details
+     */
+    private void updateProductFields(Product existingProduct, ProductRequestDTO productRequestDTO) {
+        if (productRequestDTO.getName() != null) {
+            existingProduct.setName(productRequestDTO.getName());
+        }
+        if (productRequestDTO.getDescription() != null) {
+            existingProduct.setDescription(productRequestDTO.getDescription());
+        }
+        if (productRequestDTO.getPrice() != null) {
+            existingProduct.setPrice(productRequestDTO.getPrice());
+        }
+        existingProduct.setInStock(productRequestDTO.isInStock());
     }
 
     /**
