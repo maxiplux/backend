@@ -56,5 +56,11 @@ jobs:
         with:
           java-version: 17
 
-      - name: Deploy application
-        run: echo "Deploying application..."
+      - name: Build the package
+        run: mvn package
+
+      - name: Set up GitHub authentication
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Publish package to GitHub Packages
+        run: mvn deploy
