@@ -2,21 +2,26 @@ version: '3.8'
 
 services:
   oracle-xe:
-    image: container-registry.oracle.com/database/express:latest
+    image: gvenzl/oracle-xe
 
     container_name: oracle-xe
     environment:
-      - ORACLE_PWD=admin
+      - ORACLE_PASSWORD=admin
+      - APP_USER= admin
+      - APP_USER_PASSWORD=password
     ports:
       - "1521:1521"
       - "5500:5500"
-    volumes:
-      - oracle-data:/opt/oracle/oradata
-#    healthcheck:
-#      test: ["CMD", "sqlplus", "-L", "sys/admin@//localhost:1521/XE as sysdba", "@healthcheck.sql"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
+      - "8070:8080"
+    #  -- Create users
+    #  CREATE USER source1 IDENTIFIED BY "AppPaX2056856";
+    #  CREATE USER source2 IDENTIFIED BY "AppPaX2056856";
+    #  CREATE USER source3 IDENTIFIED BY "AppPaX2056856";
+    #
+    #  -- Grant full permissions to each user
+    #  GRANT ALL PRIVILEGES TO source1;
+    #  GRANT ALL PRIVILEGES TO source2;
+    #  GRANT ALL PRIVILEGES TO source3;
   kafka:
     image: apache/kafka:latest
     container_name: kafka
