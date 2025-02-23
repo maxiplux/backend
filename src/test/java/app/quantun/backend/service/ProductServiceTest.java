@@ -34,7 +34,7 @@ class ProductServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     private Product testProduct;
     private ProductRequestDTO testProductRequestDTO;

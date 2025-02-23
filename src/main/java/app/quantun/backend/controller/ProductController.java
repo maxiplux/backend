@@ -1,193 +1,81 @@
 package app.quantun.backend.controller;
 
+import app.quantun.backend.execption.ProductNotFoundException;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
-import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.service.ProductService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.math.BigDecimal;
-import java.util.List;
+import jakarta.validation.Valid;
 
-/**
- * Controller class for managing products.
- * This class provides endpoints for CRUD operations on products.
- */
-@RestController
-@RequestMapping("/api/products")
+@Controller
+@RequestMapping("/products")
 @RequiredArgsConstructor
-@Tag(name = "Product Management", description = "Operations for managing products")
 public class ProductController {
+
     private final ProductService productService;
 
-    /**
-     * Retrieve a list of all products.
-     *
-     * @return a list of ProductResponseDTO
-     */
     @GetMapping
-    @Operation(summary = "Get all products",
-            description = "Retrieve a list of all products",
-            responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "Successfully retrieved products",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public String listProducts(Model model) {
+        model.addAttribute("products", productService.getAllProducts());
+        return "products/list";
     }
 
-    /**
-     * Retrieve a specific product by its ID.
-     *
-     * @param id the ID of the product
-     * @return the ProductResponseDTO
-     */
-    @GetMapping("/{id}")
-    @Operation(summary = "Get product by ID",
-            description = "Retrieve a specific product by its ID",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Product found",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
-            })
-    public ResponseEntity<ProductResponseDTO> getProductById(
-            @Parameter(description = "Product ID", example = "1")
-            @PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("product", new ProductRequestDTO());
+        return "products/form";
     }
 
-    /**
-     * Add a new product to the system.
-     *
-     * @param productRequestDTO the details of the product to be created
-     * @return the created ProductResponseDTO
-     */
     @PostMapping
-    @Operation(summary = "Create a new product",
-            description = "Add a new product to the system",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Product created successfully",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<ProductResponseDTO> createProduct(
-            @Parameter(description = "Product details", required = true)
-            @Valid @RequestBody ProductRequestDTO productRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(productService.createProduct(productRequestDTO));
+    public String createProduct(@Valid @ModelAttribute("product") ProductRequestDTO product,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "products/form";
+        }
+        productService.createProduct(product);
+        redirectAttributes.addFlashAttribute("message", "Product created successfully");
+        return "redirect:/products";
     }
 
-    /**
-     * Update details of an existing product.
-     *
-     * @param id the ID of the product to be updated
-     * @param productRequestDTO the updated product details
-     * @return the updated ProductResponseDTO
-     */
-    @PutMapping("/{id}")
-    @Operation(summary = "Update an existing product",
-            description = "Update details of an existing product",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Product updated successfully",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<ProductResponseDTO> updateProduct(
-            @Parameter(description = "Product ID", example = "1")
-            @PathVariable Long id,
-            @Parameter(description = "Updated product details", required = true)
-            @Valid @RequestBody ProductRequestDTO productRequestDTO) {
-        return ResponseEntity.ok(productService.updateProduct(id, productRequestDTO));
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        var product = productService.getProductById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+        model.addAttribute("product", product);
+        return "products/form";
     }
 
-    /**
-     * Remove a product from the system.
-     *
-     * @param id the ID of the product to be deleted
-     * @return a ResponseEntity with no content
-     */
+    @PostMapping("/{id}")
+    public String updateProduct(@PathVariable Long id,
+                                @Valid @ModelAttribute("product") ProductRequestDTO product,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "products/form";
+        }
+        productService.updateProduct(id, product);
+        redirectAttributes.addFlashAttribute("message", "Product updated successfully");
+        return "redirect:/products";
+    }
+
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a product",
-            description = "Remove a product from the system",
-            responses = {
-                    @ApiResponse(responseCode = "204", description = "Product deleted successfully")
-            })
-    public ResponseEntity<Void> deleteProduct(
-            @Parameter(description = "Product ID", example = "1")
-            @PathVariable Long id) {
+    public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        redirectAttributes.addFlashAttribute("message", "Product deleted successfully");
+        return "redirect:/products";
     }
 
-    /**
-     * Find products containing the given name.
-     *
-     * @param name the name to search for
-     * @return a list of ProductResponseDTO
-     */
     @GetMapping("/search")
-    @Operation(summary = "Search products by name",
-            description = "Find products containing the given name",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved matching products",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<List<ProductResponseDTO>> searchProductsByName(
-            @Parameter(description = "Product name to search", example = "Phone")
-            @RequestParam String name) {
-        return ResponseEntity.ok(productService.searchProductsByName(name));
+    public String searchProducts(@RequestParam String name, Model model) {
+        model.addAttribute("products", productService.searchProductsByName(name));
+        return "products/list";
     }
 
-    /**
-     * Retrieve products priced below a given value.
-     *
-     * @param price the maximum price
-     * @return a list of ProductResponseDTO
-     */
-    @GetMapping("/under-price")
-    @Operation(summary = "Get products under a specific price",
-            description = "Retrieve products priced below a given value",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved products",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<List<ProductResponseDTO>> getProductsUnderPrice(
-            @Parameter(description = "Maximum price", example = "100.00")
-            @RequestParam BigDecimal price) {
-        return ResponseEntity.ok(productService.getProductsUnderPrice(price));
-    }
 
-    /**
-     * Retrieve all products that are currently in stock.
-     *
-     * @return a list of ProductResponseDTO
-     */
-    @GetMapping("/in-stock")
-    @Operation(summary = "Get products in stock",
-            description = "Retrieve all products that are currently in stock",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Successfully retrieved in-stock products",
-                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
-            })
-    public ResponseEntity<List<ProductResponseDTO>> getInStockProducts() {
-        return ResponseEntity.ok(productService.getInStockProducts());
-    }
 }

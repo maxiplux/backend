@@ -1,6 +1,5 @@
 package app.quantun.backend.rest;
 
-import app.quantun.backend.controller.ProductController;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.service.ProductService;
@@ -30,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Test class for the ProductController.
  * This class contains unit tests for the ProductController.
  */
-@WebMvcTest(ProductController.class)
+@WebMvcTest(ProductRestController.class)
 public class ProductRestControllerTest {
 
     @Autowired

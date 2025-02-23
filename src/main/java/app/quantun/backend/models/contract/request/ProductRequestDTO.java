@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductRequestDTO {
 
+    private Long id;
     /**
      * The name of the product.
      * It must not be blank and its length must not exceed 255 characters.
