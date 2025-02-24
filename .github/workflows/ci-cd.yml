@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - feature/spring-data-multi-datasource
   pull_request:
     branches:
       - main
+      - feature/spring-data-multi-datasource
 
 jobs:
   build:
