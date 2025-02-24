@@ -4,6 +4,8 @@ import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
+import app.quantun.backend.source.repository.analytic.ProductAnalyticRepository;
+import app.quantun.backend.source.repository.snowflake.ProductSnowFlakeRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
+
+
     private final ModelMapper modelMapper;
 
     /**

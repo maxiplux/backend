@@ -1,11 +1,17 @@
-package app.quantun.backend.models.entity;
+package app.quantun.backend.models.analytic.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 
@@ -14,12 +20,13 @@ import java.math.BigDecimal;
  * This class is mapped to the "Product" table in the database.
  */
 
-@Entity
-@Table(name = "PRODUCT")
 @Data
+@Table(name = "PRODUCT_ANALYTIC")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+@Entity
+
+public class ProductAnalytic {
 
     /**
      * The unique identifier for the product.

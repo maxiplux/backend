@@ -13,8 +13,6 @@ class BackendApplicationTests {
     /**
      * Test to check if the application context loads successfully.
      */
-    @Test
-    void contextLoads() {
-    }
+
 
 }

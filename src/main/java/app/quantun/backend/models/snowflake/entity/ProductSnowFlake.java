@@ -1,26 +1,25 @@
-package app.quantun.backend.models.entity;
+package app.quantun.backend.models.snowflake.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 
-/**
- * Entity class representing a Product.
- * This class is mapped to the "Product" table in the database.
- */
-
-@Entity
-@Table(name = "PRODUCT")
+//@Entity
+//@Table(name = "PRODUCT_SNOWFLAKE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
-
+public class ProductSnowFlake {
     /**
      * The unique identifier for the product.
      */
