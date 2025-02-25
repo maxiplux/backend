@@ -1,24 +1,21 @@
 package app.quantun.backend.config.datasource.analytic;
 
-import javax.sql.DataSource;
-
-import jakarta.persistence.EntityManagerFactory;
-import lombok.val;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManagerFactory;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
 
 
 @Configuration
@@ -41,7 +38,7 @@ class AnalyticDataSourceConfig {
     public EntityManagerFactory analyticEntityManagerFactory(
             EntityManagerFactoryBuilder builder,
             @Qualifier("analyticDataSource") DataSource dataSource) {
-        val em= builder
+        val em = builder
                 .dataSource(dataSource)
                 .packages("app.quantun.backend.models.analytic.entity")
                 .persistenceUnit("SourceAnalyticPool")
@@ -60,13 +57,10 @@ class AnalyticDataSourceConfig {
     }
 
     @Bean(name = "analyticTransactionManager")
-    public JpaTransactionManager  analyticTransactionManager(
+    public JpaTransactionManager analyticTransactionManager(
             @Qualifier("analyticEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
-
-
-
 
 
 }

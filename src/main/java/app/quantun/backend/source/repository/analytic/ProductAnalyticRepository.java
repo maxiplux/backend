@@ -1,7 +1,6 @@
 package app.quantun.backend.source.repository.analytic;
 
 import app.quantun.backend.models.analytic.entity.ProductAnalytic;
-
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

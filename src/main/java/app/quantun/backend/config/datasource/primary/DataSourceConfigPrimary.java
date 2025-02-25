@@ -1,27 +1,22 @@
 package app.quantun.backend.config.datasource.primary;
 
-import javax.sql.DataSource;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManagerFactory;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
+import javax.sql.DataSource;
 
 
 @Configuration
@@ -35,7 +30,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class DataSourceConfigPrimary {
     @Primary
     @Bean(name = "primaryDataSource")
-    public DataSource dataSource(@Qualifier("primaryHikariConfig") HikariConfig hikariConfig){
+    public DataSource dataSource(@Qualifier("primaryHikariConfig") HikariConfig hikariConfig) {
         return new HikariDataSource(hikariConfig);
     }
 
@@ -46,7 +41,7 @@ public class DataSourceConfigPrimary {
             EntityManagerFactoryBuilder builder,
             @Qualifier("primaryDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean
-                em= builder
+                em = builder
                 .dataSource(dataSource)
                 .packages("app.quantun.backend.models.entity")
                 .persistenceUnit("primary")
@@ -66,7 +61,7 @@ public class DataSourceConfigPrimary {
 
     @Primary
     @Bean(name = "primaryTransactionManager")
-    public JpaTransactionManager  transactionManager(
+    public JpaTransactionManager transactionManager(
             @Qualifier("primaryEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }

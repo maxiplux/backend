@@ -4,8 +4,6 @@ import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
-import app.quantun.backend.source.repository.analytic.ProductAnalyticRepository;
-import app.quantun.backend.source.repository.snowflake.ProductSnowFlakeRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -70,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Update details of an existing product.
      *
-     * @param id the ID of the product to be updated
+     * @param id                the ID of the product to be updated
      * @param productRequestDTO the updated product details
      * @return the updated ProductResponseDTO
      */
@@ -89,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Update the fields of an existing product with the provided details.
      *
-     * @param existingProduct the existing product to be updated
+     * @param existingProduct   the existing product to be updated
      * @param productRequestDTO the updated product details
      */
     @Override

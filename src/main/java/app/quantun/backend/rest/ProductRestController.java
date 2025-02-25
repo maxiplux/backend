@@ -95,7 +95,7 @@ public class ProductRestController {
     /**
      * Update details of an existing product.
      *
-     * @param id the ID of the product to be updated
+     * @param id                the ID of the product to be updated
      * @param productRequestDTO the updated product details
      * @return the updated ProductResponseDTO
      */

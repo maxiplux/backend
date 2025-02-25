@@ -1,6 +1,7 @@
 package app.quantun.backend.batch;
 
 import app.quantun.backend.models.entity.Product;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -32,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import jakarta.persistence.EntityManagerFactory;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -141,12 +141,12 @@ public class ProductBatchConfig {
         log.info("Creating XLSX writer bean for path: {}", outputPath);
 
         return new AbstractFileItemWriter<Product>() {
+            private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             private Workbook workbook;
             private Sheet sheet;
             private int rowNum = 0;
             private int itemCount = 0;
             private boolean workbookClosed = false;
-            private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             @Override
             public void afterPropertiesSet() throws Exception {

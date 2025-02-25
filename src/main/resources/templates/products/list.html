@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{master/master :: layout(~{::main})}">
+<html th:replace="~{master/master :: layout(~{::main})}"
+      xmlns:th="http://www.thymeleaf.org">
 <body>
 <main>
     <div class="px-4 sm:px-6 lg:px-8">
@@ -10,7 +10,9 @@
                 <p class="mt-2 text-sm text-gray-700">A list of all products in your inventory</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <a th:href="@{/products/create}" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-500">Add product</a>
+                <a class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-500"
+                   th:href="@{/products/create}">Add
+                    product</a>
             </div>
         </div>
 
@@ -28,16 +30,21 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                         <tr th:each="product : ${products}">
-                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900" th:text="${product.name}">Product name</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" th:text="${product.price}">29.99</td>
+                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900"
+                                th:text="${product.name}">Product name
+                            </td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" th:text="${product.price}">
+                                29.99
+                            </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
                                           th:text="${product.inStock ? 'In Stock' : 'Out of Stock'}">Status</span>
                             </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                                <a th:href="@{/products/{id}/edit(id=${product.id})}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                <form th:action="@{/products/{id}(id=${product.id})}" th:method="delete" class="inline">
-                                    <button type="submit" class="ml-2 text-red-600 hover:text-red-900">Delete</button>
+                                <a class="text-indigo-600 hover:text-indigo-900"
+                                   th:href="@{/products/{id}/edit(id=${product.id})}">Edit</a>
+                                <form class="inline" th:action="@{/products/{id}(id=${product.id})}" th:method="delete">
+                                    <button class="ml-2 text-red-600 hover:text-red-900" type="submit">Delete</button>
                                 </form>
                             </td>
                         </tr>
