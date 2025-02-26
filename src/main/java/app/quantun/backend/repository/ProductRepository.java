@@ -2,6 +2,7 @@ package app.quantun.backend.repository;
 
 import app.quantun.backend.models.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -37,4 +38,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * @return a list of products that are in stock
      */
     List<Product> findByInStock(boolean inStock);
+
+    /**
+     * Find products by advanced search criteria.
+     *
+     * @param name the name to search for
+     * @param minPrice the minimum price
+     * @param maxPrice the maximum price
+     * @param inStock indicates whether the product is in stock
+     * @return a list of products matching the search criteria
+     */
+    @Query("SELECT p FROM Product p WHERE " +
+            "(:name IS NULL OR p.name LIKE %:name%) AND " +
+            "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
+            "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
+            "(:inStock IS NULL OR p.inStock = :inStock)")
+    List<Product> advancedSearch(String name, BigDecimal minPrice, BigDecimal maxPrice, Boolean inStock);
 }

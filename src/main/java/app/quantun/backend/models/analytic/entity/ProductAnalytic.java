@@ -1,6 +1,5 @@
 package app.quantun.backend.models.analytic.entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,9 +9,13 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Entity class representing a Product.
@@ -24,7 +27,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
+@EntityListeners(AuditingEntityListener.class)
 public class ProductAnalytic {
 
     /**
@@ -62,4 +65,16 @@ public class ProductAnalytic {
      * The quantity of the product in stock.
      */
     private int stock;
+
+    /**
+     * The date and time when the product was created.
+     */
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    /**
+     * The date and time when the product was last modified.
+     */
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
 }

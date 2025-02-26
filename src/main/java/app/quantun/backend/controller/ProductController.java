@@ -5,6 +5,7 @@ import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,8 +20,8 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
+    public String listProducts(Model model, Pageable pageable) {
+        model.addAttribute("products", productService.getAllProducts(pageable));
         return "products/list";
     }
 

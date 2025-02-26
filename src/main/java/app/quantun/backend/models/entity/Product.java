@@ -6,8 +6,12 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Entity class representing a Product.
@@ -19,6 +23,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     /**
@@ -56,4 +61,16 @@ public class Product {
      * The quantity of the product in stock.
      */
     private int stock;
+
+    /**
+     * The date and time when the product was created.
+     */
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    /**
+     * The date and time when the product was last modified.
+     */
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
 }
