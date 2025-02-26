@@ -6,6 +6,7 @@ import app.quantun.backend.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,7 +43,8 @@ public class ProductRestController {
                     @ApiResponse(responseCode = "200",
                             description = "Successfully retrieved products",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}]")))
             })
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
@@ -60,8 +62,11 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product found",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Product not found")
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}"))),
+                    @ApiResponse(responseCode = "404", description = "Product not found",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    examples = @ExampleObject(value = "{\"error\":\"Product not found\"}")))
             })
     public ResponseEntity<ProductResponseDTO> getProductById(
             @Parameter(description = "Product ID", example = "1")
@@ -83,7 +88,11 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "201", description = "Product created successfully",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}"))),
+                    @ApiResponse(responseCode = "400", description = "Invalid input",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    examples = @ExampleObject(value = "{\"error\":\"Invalid input\"}")))
             })
     public ResponseEntity<ProductResponseDTO> createProduct(
             @Parameter(description = "Product details", required = true)
@@ -105,7 +114,14 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Product updated successfully",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Updated Product\",\"description\":\"Updated Description\",\"price\":150.00,\"inStock\":true,\"stock\":5}"))),
+                    @ApiResponse(responseCode = "404", description = "Product not found",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    examples = @ExampleObject(value = "{\"error\":\"Product not found\"}"))),
+                    @ApiResponse(responseCode = "400", description = "Invalid input",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    examples = @ExampleObject(value = "{\"error\":\"Invalid input\"}")))
             })
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @Parameter(description = "Product ID", example = "1")
@@ -125,7 +141,10 @@ public class ProductRestController {
     @Operation(summary = "Delete a product",
             description = "Remove a product from the system",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Product deleted successfully")
+                    @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
+                    @ApiResponse(responseCode = "404", description = "Product not found",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    examples = @ExampleObject(value = "{\"error\":\"Product not found\"}")))
             })
     public ResponseEntity<Void> deleteProduct(
             @Parameter(description = "Product ID", example = "1")
@@ -146,7 +165,8 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved matching products",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}]")))
             })
     public ResponseEntity<List<ProductResponseDTO>> searchProductsByName(
             @Parameter(description = "Product name to search", example = "Phone")
@@ -166,7 +186,8 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved products",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":50.00,\"inStock\":true,\"stock\":10}]")))
             })
     public ResponseEntity<List<ProductResponseDTO>> getProductsUnderPrice(
             @Parameter(description = "Maximum price", example = "100.00")
@@ -185,7 +206,8 @@ public class ProductRestController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Successfully retrieved in-stock products",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)))
+                                    schema = @Schema(implementation = ProductResponseDTO.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}]")))
             })
     public ResponseEntity<List<ProductResponseDTO>> getInStockProducts() {
         return ResponseEntity.ok(productService.getInStockProducts());
