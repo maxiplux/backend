@@ -37,6 +37,13 @@ import org.springframework.context.annotation.Configuration;
                         variables = {
                                 @ServerVariable(name = "port", defaultValue = "8080")
                         }
+                ),
+                @Server(
+                        description = "Production server",
+                        url = "https://api.yourcompany.com",
+                        variables = {
+                                @ServerVariable(name = "port", defaultValue = "443")
+                        }
                 )
         },
         tags = {

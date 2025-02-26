@@ -6,6 +6,8 @@ import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +35,9 @@ public class ProductServiceImpl implements ProductService {
      * @return a list of ProductResponseDTO
      */
     @Override
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class))
-                .collect(Collectors.toList());
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
     }
 
     /**

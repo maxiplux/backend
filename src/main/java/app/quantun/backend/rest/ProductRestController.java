@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +48,8 @@ public class ProductRestController {
                                     schema = @Schema(implementation = ProductResponseDTO.class),
                                     examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Product 1\",\"description\":\"Description 1\",\"price\":100.00,\"inStock\":true,\"stock\":10}]")))
             })
-    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(Pageable pageable) {
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
     /**
