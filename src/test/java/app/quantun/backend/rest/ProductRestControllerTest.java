@@ -56,6 +56,7 @@ public class ProductRestControllerTest {
 
         sampleProductRequest = ProductRequestDTO.builder()
                 .name("Test Product")
+                .description("This is a test product description")
                 .price(BigDecimal.valueOf(19.99))
                 .inStock(true)
                 .build();

@@ -39,7 +39,7 @@ class ProductControllerTest {
     void setUp() {
         sampleProductRequest = new ProductRequestDTO();
         sampleProductRequest.setName("Test Product");
-
+        sampleProductRequest.setDescription("This is a test product description");
         sampleProductRequest.setPrice(new BigDecimal("10.0"));
     }
 

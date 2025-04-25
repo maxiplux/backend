@@ -2,6 +2,7 @@ package app.quantun.backend.models.contract.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +32,9 @@ public class ProductRequestDTO {
 
     /**
      * The description of the product.
+     * It must not be blank.
      */
+    @NotBlank(message = "{product.description.required}")
     private String description;
 
     /**
@@ -48,6 +51,8 @@ public class ProductRequestDTO {
 
     /**
      * The quantity of the product in stock.
+     * It must be a non-negative value.
      */
+    @PositiveOrZero(message = "{product.stock.positive}")
     private int stock;
 }

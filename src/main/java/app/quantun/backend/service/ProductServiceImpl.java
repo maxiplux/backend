@@ -1,10 +1,12 @@
 package app.quantun.backend.service;
 
+import app.quantun.backend.exception.ProductNotFoundException;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
@@ -31,9 +34,12 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll().stream()
+        log.info("Retrieving all products");
+        List<ProductResponseDTO> products = productRepository.findAll().stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .collect(Collectors.toList());
+        log.info("Retrieved {} products", products.size());
+        return products;
     }
 
     /**
@@ -44,8 +50,18 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public Optional<ProductResponseDTO> getProductById(Long id) {
-        return productRepository.findById(id)
-                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        log.info("Retrieving product with id: {}", id);
+        Optional<ProductResponseDTO> product = productRepository.findById(id)
+                .map(p -> {
+                    log.debug("Found product: {}", p.getName());
+                    return modelMapper.map(p, ProductResponseDTO.class);
+                });
+
+        if (product.isEmpty()) {
+            log.warn("Product with id {} not found", id);
+        }
+
+        return product;
     }
 
     /**
@@ -57,8 +73,10 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
+        log.info("Creating new product: {}", productRequestDTO.getName());
         Product product = modelMapper.map(productRequestDTO, Product.class);
         Product savedProduct = productRepository.save(product);
+        log.info("Product created with id: {}", savedProduct.getId());
         return modelMapper.map(savedProduct, ProductResponseDTO.class);
     }
 
@@ -72,13 +90,19 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
+        log.info("Updating product with id: {}", id);
         return productRepository.findById(id)
                 .map(existingProduct -> {
+                    log.debug("Found product to update: {}", existingProduct.getName());
                     updateProductFields(existingProduct, productRequestDTO);
                     Product updatedProduct = productRepository.save(existingProduct);
+                    log.info("Product updated successfully: {}", updatedProduct.getId());
                     return modelMapper.map(updatedProduct, ProductResponseDTO.class);
                 })
-                .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
+                .orElseThrow(() -> {
+                    log.error("Failed to update - product not found with id: {}", id);
+                    return new ProductNotFoundException("Product not found with id " + id);
+                });
     }
 
     /**
@@ -89,16 +113,26 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void updateProductFields(Product existingProduct, ProductRequestDTO productRequestDTO) {
+        log.debug("Updating fields for product: {}", existingProduct.getId());
         if (productRequestDTO.getName() != null) {
+            log.debug("Updating name from '{}' to '{}'", existingProduct.getName(), productRequestDTO.getName());
             existingProduct.setName(productRequestDTO.getName());
         }
         if (productRequestDTO.getDescription() != null) {
+            log.debug("Updating description for product: {}", existingProduct.getId());
             existingProduct.setDescription(productRequestDTO.getDescription());
         }
         if (productRequestDTO.getPrice() != null) {
+            log.debug("Updating price from '{}' to '{}'", existingProduct.getPrice(), productRequestDTO.getPrice());
             existingProduct.setPrice(productRequestDTO.getPrice());
         }
+        log.debug("Updating stock status from '{}' to '{}'", existingProduct.isInStock(), productRequestDTO.isInStock());
         existingProduct.setInStock(productRequestDTO.isInStock());
+
+        if (productRequestDTO.getStock() > 0) {
+            log.debug("Updating stock quantity to: {}", productRequestDTO.getStock());
+            existingProduct.setStock(productRequestDTO.getStock());
+        }
     }
 
     /**
@@ -109,9 +143,14 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteProduct(Long id) {
+        log.info("Deleting product with id: {}", id);
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
+                .orElseThrow(() -> {
+                    log.error("Failed to delete - product not found with id: {}", id);
+                    return new ProductNotFoundException("Product not found with id " + id);
+                });
         productRepository.delete(product);
+        log.info("Product deleted successfully: {}", id);
     }
 
     /**
@@ -122,9 +161,12 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<ProductResponseDTO> searchProductsByName(String name) {
-        return productRepository.findByNameContaining(name).stream()
+        log.info("Searching products by name: {}", name);
+        List<ProductResponseDTO> products = productRepository.findByNameContaining(name).stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .collect(Collectors.toList());
+        log.info("Found {} products matching name: {}", products.size(), name);
+        return products;
     }
 
     /**
@@ -135,9 +177,12 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<ProductResponseDTO> getProductsUnderPrice(BigDecimal price) {
-        return productRepository.findByPriceLessThan(price).stream()
+        log.info("Retrieving products under price: {}", price);
+        List<ProductResponseDTO> products = productRepository.findByPriceLessThan(price).stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .collect(Collectors.toList());
+        log.info("Found {} products under price: {}", products.size(), price);
+        return products;
     }
 
     /**
@@ -147,8 +192,11 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<ProductResponseDTO> getInStockProducts() {
-        return productRepository.findByInStock(true).stream()
+        log.info("Retrieving in-stock products");
+        List<ProductResponseDTO> products = productRepository.findByInStock(true).stream()
                 .map(product -> modelMapper.map(product, ProductResponseDTO.class))
                 .collect(Collectors.toList());
+        log.info("Found {} in-stock products", products.size());
+        return products;
     }
 }

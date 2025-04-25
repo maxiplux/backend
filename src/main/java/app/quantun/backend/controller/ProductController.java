@@ -1,6 +1,6 @@
 package app.quantun.backend.controller;
 
-import app.quantun.backend.execption.ProductNotFoundException;
+import app.quantun.backend.exception.ProductNotFoundException;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
