@@ -2,8 +2,13 @@ package app.quantun.backend.controller;
 
 import app.quantun.backend.exception.ProductNotFoundException;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
+import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,8 +25,27 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
+    public String listProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "ASC") String direction,
+            Model model) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Page<ProductResponseDTO> productPage = productService.getAllProductsPaged(pageable);
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("totalItems", productPage.getTotalElements());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("sortField", sort);
+        model.addAttribute("sortDirection", direction);
+        model.addAttribute("reverseSortDirection", direction.equals("ASC") ? "DESC" : "ASC");
+
         return "products/list";
     }
 
@@ -72,8 +96,29 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public String searchProducts(@RequestParam String name, Model model) {
-        model.addAttribute("products", productService.searchProductsByName(name));
+    public String searchProducts(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "ASC") String direction,
+            Model model) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Page<ProductResponseDTO> productPage = productService.searchProductsByNamePaged(name, pageable);
+
+        model.addAttribute("products", productPage.getContent());
+        model.addAttribute("currentPage", productPage.getNumber());
+        model.addAttribute("totalItems", productPage.getTotalElements());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("sortField", sort);
+        model.addAttribute("sortDirection", direction);
+        model.addAttribute("reverseSortDirection", direction.equals("ASC") ? "DESC" : "ASC");
+        model.addAttribute("searchTerm", name);
+
         return "products/list";
     }
 

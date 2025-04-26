@@ -7,7 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -46,7 +48,8 @@ class ProductControllerTest {
     @Test
     void testListProducts() throws Exception {
         // Arrange
-        when(productService.getAllProducts()).thenReturn(Collections.emptyList());
+        Page<ProductResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
+        when(productService.getAllProductsPaged(any(Pageable.class))).thenReturn(emptyPage);
 
         // Act & Assert
         mockMvc.perform(get("/products"))
@@ -54,7 +57,7 @@ class ProductControllerTest {
                 .andExpect(view().name("products/list"))
                 .andExpect(model().attributeExists("products"));
 
-        verify(productService).getAllProducts();
+        verify(productService).getAllProductsPaged(any(Pageable.class));
     }
 
     @Test
@@ -178,7 +181,8 @@ class ProductControllerTest {
     void testSearchProducts() throws Exception {
         // Arrange
         String searchName = "Test";
-        when(productService.searchProductsByName(anyString())).thenReturn(Collections.emptyList());
+        Page<ProductResponseDTO> emptyPage = new PageImpl<>(Collections.emptyList());
+        when(productService.searchProductsByNamePaged(anyString(), any(Pageable.class))).thenReturn(emptyPage);
 
         // Act & Assert
         mockMvc.perform(get("/products/search")
@@ -187,7 +191,7 @@ class ProductControllerTest {
                 .andExpect(view().name("products/list"))
                 .andExpect(model().attributeExists("products"));
 
-        verify(productService).searchProductsByName(searchName);
+        verify(productService).searchProductsByNamePaged(eq(searchName), any(Pageable.class));
     }
 
 }

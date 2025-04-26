@@ -1,27 +1,21 @@
 package app.quantun.backend.models.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 
 /**
  * Entity class representing a Product.
  * This class is mapped to the "Product" table in the database.
  */
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -61,4 +55,23 @@ public class Product {
      * The quantity of the product in stock.
      */
     private int stock;
+
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    /**
+     * The timestamp when the product was created.
+     */
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * The timestamp when the product was last updated.
+     */
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

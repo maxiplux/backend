@@ -1,13 +1,20 @@
 package app.quantun.backend.service;
 
 import app.quantun.backend.exception.ProductNotFoundException;
+import app.quantun.backend.models.contract.request.ProductFilterDTO;
 import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
+import app.quantun.backend.repository.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -198,5 +205,149 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
         log.info("Found {} in-stock products", products.size());
         return products;
+    }
+
+    /**
+     * Retrieve a paged list of all products.
+     *
+     * @param pageable pagination information
+     * @return a page of ProductResponseDTO
+     */
+    @Override
+    public Page<ProductResponseDTO> getAllProductsPaged(Pageable pageable) {
+        log.info("Retrieving paged products with page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+        Page<ProductResponseDTO> productPage = productRepository.findAll(pageable)
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        log.info("Retrieved page {} of {} with {} products", 
+                productPage.getNumber(), productPage.getTotalPages(), productPage.getNumberOfElements());
+        return productPage;
+    }
+
+    /**
+     * Find products containing the given name with pagination.
+     *
+     * @param name the name to search for
+     * @param pageable pagination information
+     * @return a page of ProductResponseDTO
+     */
+    @Override
+    public Page<ProductResponseDTO> searchProductsByNamePaged(String name, Pageable pageable) {
+        log.info("Searching paged products by name: {} with page: {}, size: {}", 
+                name, pageable.getPageNumber(), pageable.getPageSize());
+        Page<Product> productPage = productRepository.findByNameContaining(name, pageable);
+        Page<ProductResponseDTO> result = productPage
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        log.info("Found page {} of {} with {} products matching name: {}", 
+                result.getNumber(), result.getTotalPages(), result.getNumberOfElements(), name);
+        return result;
+    }
+
+    /**
+     * Retrieve products priced below a given value with pagination.
+     *
+     * @param price the maximum price
+     * @param pageable pagination information
+     * @return a page of ProductResponseDTO
+     */
+    @Override
+    public Page<ProductResponseDTO> getProductsUnderPricePaged(BigDecimal price, Pageable pageable) {
+        log.info("Retrieving paged products under price: {} with page: {}, size: {}", 
+                price, pageable.getPageNumber(), pageable.getPageSize());
+        Page<Product> productPage = productRepository.findByPriceLessThan(price, pageable);
+        Page<ProductResponseDTO> result = productPage
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        log.info("Found page {} of {} with {} products under price: {}", 
+                result.getNumber(), result.getTotalPages(), result.getNumberOfElements(), price);
+        return result;
+    }
+
+    /**
+     * Retrieve all products that are currently in stock with pagination.
+     *
+     * @param pageable pagination information
+     * @return a page of ProductResponseDTO
+     */
+    @Override
+    public Page<ProductResponseDTO> getInStockProductsPaged(Pageable pageable) {
+        log.info("Retrieving paged in-stock products with page: {}, size: {}", 
+                pageable.getPageNumber(), pageable.getPageSize());
+        Page<Product> productPage = productRepository.findByInStock(true, pageable);
+        Page<ProductResponseDTO> result = productPage
+                .map(product -> modelMapper.map(product, ProductResponseDTO.class));
+        log.info("Found page {} of {} with {} in-stock products", 
+                result.getNumber(), result.getTotalPages(), result.getNumberOfElements());
+        return result;
+    }
+
+    /**
+     * Filter products using criteria with pagination.
+     *
+     * @param filter the filter criteria
+     * @return a page of products matching the filter criteria
+     */
+    @Override
+    public Page<ProductResponseDTO> filterProducts(ProductFilterDTO filter) {
+        log.info("Filtering products with criteria: {}", filter);
+
+        // Create pageable with sorting
+        Pageable pageable = PageRequest.of(
+            filter.getPage(), 
+            filter.getSize(),
+            Sort.by(filter.getSortDirection(), filter.getSortBy())
+        );
+
+        // Apply specification and pagination
+        Page<Product> productPage = productRepository.findAll(
+            ProductSpecification.getProductSpecification(filter), 
+            pageable
+        );
+
+        // Map to DTOs
+        Page<ProductResponseDTO> responsePage = productPage.map(
+            product -> modelMapper.map(product, ProductResponseDTO.class)
+        );
+
+        log.info("Filtered {} products (page {} of {})",
+                responsePage.getNumberOfElements(),
+                responsePage.getNumber() + 1,
+                responsePage.getTotalPages());
+
+        return responsePage;
+    }
+
+    /**
+     * Filter products using criteria with slice-based pagination.
+     *
+     * @param filter the filter criteria
+     * @return a slice of products matching the filter criteria
+     */
+    @Override
+    public Slice<ProductResponseDTO> filterProductsWithSlice(ProductFilterDTO filter) {
+        log.info("Filtering products with criteria using slice: {}", filter);
+
+        // Create pageable with sorting
+        Pageable pageable = PageRequest.of(
+            filter.getPage(), 
+            filter.getSize(),
+            Sort.by(filter.getSortDirection(), filter.getSortBy())
+        );
+
+        // Apply specification and pagination
+
+        Slice<Product> productSlice = productRepository.findAllWithCategory(
+            ProductSpecification.getProductSpecification(filter), 
+            pageable
+        );
+
+        // Map to DTOs
+        Slice<ProductResponseDTO> responseSlice = productSlice.map(
+            product -> modelMapper.map(product, ProductResponseDTO.class)
+        );
+
+        log.info("Filtered {} products (slice page {})",
+                responseSlice.getNumberOfElements(),
+                responseSlice.getNumber() + 1);
+
+        return responseSlice;
     }
 }
