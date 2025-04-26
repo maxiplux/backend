@@ -1,7 +1,6 @@
 package app.quantun.backend.repository;
 
 import app.quantun.backend.models.entity.Category;
-import app.quantun.backend.models.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -30,7 +29,7 @@ public interface CategoryRepository extends PagingAndSortingRepository<Category,
     /**
      * Find categories containing the given name with pagination.
      *
-     * @param name the name to search for
+     * @param name     the name to search for
      * @param pageable pagination information
      * @return a page of categories containing the given name
      */
@@ -39,7 +38,7 @@ public interface CategoryRepository extends PagingAndSortingRepository<Category,
     /**
      * Find categories containing the given name with slice-based pagination.
      *
-     * @param name the name to search for
+     * @param name     the name to search for
      * @param pageable pagination information
      * @return a slice of categories containing the given name
      */

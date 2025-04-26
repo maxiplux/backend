@@ -48,7 +48,7 @@ public interface CategoryService {
      * Get all products in a specific category with pagination.
      *
      * @param categoryId the ID of the category
-     * @param pageable pagination information
+     * @param pageable   pagination information
      * @return a page of ProductResponseDTO
      */
     Slice<ProductResponseDTO> getProductsByCategoryPaged(Long categoryId, Pageable pageable);

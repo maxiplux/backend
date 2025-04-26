@@ -13,14 +13,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +27,11 @@ import java.util.List;
  * This class provides endpoints for CRUD operations on categories.
  */
 @RestController
+@Validated
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
 @Tag(name = "Category Management", description = "Operations for managing categories")
+
 public class CategoryRestController {
     private final CategoryService categoryService;
 
@@ -57,9 +56,9 @@ public class CategoryRestController {
     /**
      * Retrieve a paged list of all categories.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of CategoryResponseDTO
      */
@@ -135,7 +134,7 @@ public class CategoryRestController {
     /**
      * Update details of an existing category.
      *
-     * @param id the ID of the category to be updated
+     * @param id                 the ID of the category to be updated
      * @param categoryRequestDTO the updated category details
      * @return the updated CategoryResponseDTO
      */
@@ -197,10 +196,10 @@ public class CategoryRestController {
     /**
      * Find categories containing the given name with pagination.
      *
-     * @param name the name to search for
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param name      the name to search for
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of CategoryResponseDTO
      */
@@ -254,10 +253,10 @@ public class CategoryRestController {
     /**
      * Get all products in a specific category with pagination.
      *
-     * @param id the ID of the category
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param id        the ID of the category
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of ProductResponseDTO
      */

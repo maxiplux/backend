@@ -1,10 +1,6 @@
 package app.quantun.backend.models.contract.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,12 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductFilterDTO {
+
     @Size(max = 255, message = "Name must be less than 255 characters")
     private String name;
 
     @Size(max = 1000, message = "Description must be less than 1000 characters")
     private String description;
 
+    // @NotNull(message = "Category ID is required")
     @Positive(message = "Category ID must be positive")
     private Long categoryId;
 
@@ -56,4 +54,12 @@ public class ProductFilterDTO {
     private String sortBy = "id";
 
     private Sort.Direction sortDirection = Sort.Direction.ASC;
+
+    @AssertTrue(message = "At least one filter field must be provided")
+    public boolean isAtLeastOneFieldPresent() {
+        // you can use @Notnull to force a specific item to be present
+        //// @NotNull(message = "Category ID is required")
+        return name != null || minPrice != null || maxPrice != null ||
+                categoryId != null || description != null;
+    }
 }

@@ -31,46 +31,46 @@ public class CategorySpecification {
             // Filter by name
             if (StringUtils.hasText(filter.getName())) {
                 predicates.add(criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("name")),
-                    "%" + filter.getName().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("name")),
+                        "%" + filter.getName().toLowerCase() + "%"
                 ));
             }
 
             // Filter by description
             if (StringUtils.hasText(filter.getDescription())) {
                 predicates.add(criteriaBuilder.like(
-                    criteriaBuilder.lower(root.get("description")),
-                    "%" + filter.getDescription().toLowerCase() + "%"
+                        criteriaBuilder.lower(root.get("description")),
+                        "%" + filter.getDescription().toLowerCase() + "%"
                 ));
             }
 
             // Filter by creation date range
             if (filter.getCreatedAfter() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                    root.get("createdAt"),
-                    filter.getCreatedAfter()
+                        root.get("createdAt"),
+                        filter.getCreatedAfter()
                 ));
             }
 
             if (filter.getCreatedBefore() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                    root.get("createdAt"),
-                    filter.getCreatedBefore()
+                        root.get("createdAt"),
+                        filter.getCreatedBefore()
                 ));
             }
 
             // Filter by update date range
             if (filter.getUpdatedAfter() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                    root.get("updatedAt"),
-                    filter.getUpdatedAfter()
+                        root.get("updatedAt"),
+                        filter.getUpdatedAfter()
                 ));
             }
 
             if (filter.getUpdatedBefore() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                    root.get("updatedAt"),
-                    filter.getUpdatedBefore()
+                        root.get("updatedAt"),
+                        filter.getUpdatedBefore()
                 ));
             }
 

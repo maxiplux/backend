@@ -1,7 +1,6 @@
 package app.quantun.backend.config;
 
 import app.quantun.backend.models.contract.request.CategoryRequestDTO;
-import app.quantun.backend.models.contract.request.ProductRequestDTO;
 import app.quantun.backend.models.contract.response.CategoryResponseDTO;
 import app.quantun.backend.models.entity.Category;
 import app.quantun.backend.models.entity.Product;
@@ -45,23 +44,23 @@ public class DataInitializer {
     public CommandLineRunner initData() {
         return args -> {
             log.info("Starting data initialization...");
-            
+
             // Check if data already exists
             if (categoryRepository.count() > 0 || productRepository.count() > 0) {
                 log.info("Data already exists, skipping initialization");
                 return;
             }
-            
+
             // Create categories
             Map<String, CategoryResponseDTO> categories = createCategories();
-            
+
             // Create products
             createProducts(categories);
-            
+
             log.info("Data initialization completed successfully");
         };
     }
-    
+
     /**
      * Create sample categories.
      *
@@ -69,41 +68,41 @@ public class DataInitializer {
      */
     private Map<String, CategoryResponseDTO> createCategories() {
         log.info("Creating sample categories...");
-        
+
         Map<String, CategoryResponseDTO> categories = new HashMap<>();
-        
+
         // Electronics category
         CategoryRequestDTO electronics = CategoryRequestDTO.builder()
                 .name("Electronics")
                 .description("Electronic devices and accessories")
                 .build();
         categories.put("Electronics", categoryService.createCategory(electronics));
-        
+
         // Clothing category
         CategoryRequestDTO clothing = CategoryRequestDTO.builder()
                 .name("Clothing")
                 .description("Apparel and fashion items")
                 .build();
         categories.put("Clothing", categoryService.createCategory(clothing));
-        
+
         // Books category
         CategoryRequestDTO books = CategoryRequestDTO.builder()
                 .name("Books")
                 .description("Books, e-books, and publications")
                 .build();
         categories.put("Books", categoryService.createCategory(books));
-        
+
         // Home & Kitchen category
         CategoryRequestDTO homeKitchen = CategoryRequestDTO.builder()
                 .name("Home & Kitchen")
                 .description("Home appliances and kitchen essentials")
                 .build();
         categories.put("Home & Kitchen", categoryService.createCategory(homeKitchen));
-        
+
         log.info("Created {} categories", categories.size());
         return categories;
     }
-    
+
     /**
      * Create sample products and associate them with categories.
      *
@@ -111,25 +110,25 @@ public class DataInitializer {
      */
     private void createProducts(Map<String, CategoryResponseDTO> categories) {
         log.info("Creating sample products...");
-        
+
         // Since ProductRequestDTO doesn't have a category field, we need to create the Product entities directly
         // and set their category before saving them
-        
+
         // Electronics products
         createElectronicsProducts(categories.get("Electronics").getId());
-        
+
         // Clothing products
         createClothingProducts(categories.get("Clothing").getId());
-        
+
         // Books products
         createBooksProducts(categories.get("Books").getId());
-        
+
         // Home & Kitchen products
         createHomeKitchenProducts(categories.get("Home & Kitchen").getId());
-        
+
         log.info("Created products for all categories");
     }
-    
+
     /**
      * Create sample electronics products.
      *
@@ -139,7 +138,7 @@ public class DataInitializer {
         // Find the category
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        
+
         // Create products
         Product smartphone = new Product();
         smartphone.setName("Smartphone X");
@@ -149,7 +148,7 @@ public class DataInitializer {
         smartphone.setStock(50);
         smartphone.setCategory(category);
         productRepository.save(smartphone);
-        
+
         Product laptop = new Product();
         laptop.setName("Laptop Pro");
         laptop.setDescription("High-performance laptop for professionals");
@@ -158,7 +157,7 @@ public class DataInitializer {
         laptop.setStock(30);
         laptop.setCategory(category);
         productRepository.save(laptop);
-        
+
         Product headphones = new Product();
         headphones.setName("Wireless Headphones");
         headphones.setDescription("Noise-cancelling wireless headphones");
@@ -168,7 +167,7 @@ public class DataInitializer {
         headphones.setCategory(category);
         productRepository.save(headphones);
     }
-    
+
     /**
      * Create sample clothing products.
      *
@@ -178,7 +177,7 @@ public class DataInitializer {
         // Find the category
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        
+
         // Create products
         Product tShirt = new Product();
         tShirt.setName("Cotton T-Shirt");
@@ -188,7 +187,7 @@ public class DataInitializer {
         tShirt.setStock(200);
         tShirt.setCategory(category);
         productRepository.save(tShirt);
-        
+
         Product jeans = new Product();
         jeans.setName("Slim Fit Jeans");
         jeans.setDescription("Classic slim fit jeans for everyday wear");
@@ -197,7 +196,7 @@ public class DataInitializer {
         jeans.setStock(150);
         jeans.setCategory(category);
         productRepository.save(jeans);
-        
+
         Product jacket = new Product();
         jacket.setName("Winter Jacket");
         jacket.setDescription("Warm winter jacket with water-resistant exterior");
@@ -207,7 +206,7 @@ public class DataInitializer {
         jacket.setCategory(category);
         productRepository.save(jacket);
     }
-    
+
     /**
      * Create sample books products.
      *
@@ -217,7 +216,7 @@ public class DataInitializer {
         // Find the category
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        
+
         // Create products
         Product novel = new Product();
         novel.setName("Bestselling Novel");
@@ -227,7 +226,7 @@ public class DataInitializer {
         novel.setStock(300);
         novel.setCategory(category);
         productRepository.save(novel);
-        
+
         Product cookbook = new Product();
         cookbook.setName("Gourmet Cookbook");
         cookbook.setDescription("Collection of gourmet recipes from around the world");
@@ -236,7 +235,7 @@ public class DataInitializer {
         cookbook.setStock(120);
         cookbook.setCategory(category);
         productRepository.save(cookbook);
-        
+
         Product textbook = new Product();
         textbook.setName("Computer Science Textbook");
         textbook.setDescription("Comprehensive guide to computer science principles");
@@ -246,7 +245,7 @@ public class DataInitializer {
         textbook.setCategory(category);
         productRepository.save(textbook);
     }
-    
+
     /**
      * Create sample home & kitchen products.
      *
@@ -256,7 +255,7 @@ public class DataInitializer {
         // Find the category
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        
+
         // Create products
         Product blender = new Product();
         blender.setName("High-Speed Blender");
@@ -266,7 +265,7 @@ public class DataInitializer {
         blender.setStock(60);
         blender.setCategory(category);
         productRepository.save(blender);
-        
+
         Product coffeemaker = new Product();
         coffeemaker.setName("Programmable Coffee Maker");
         coffeemaker.setDescription("Automatic coffee maker with timer and multiple settings");
@@ -275,7 +274,7 @@ public class DataInitializer {
         coffeemaker.setStock(45);
         coffeemaker.setCategory(category);
         productRepository.save(coffeemaker);
-        
+
         Product toaster = new Product();
         toaster.setName("4-Slice Toaster");
         toaster.setDescription("Stainless steel toaster with multiple browning settings");

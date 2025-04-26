@@ -13,11 +13,7 @@ import app.quantun.backend.repository.specification.CategorySpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,7 +90,7 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Update details of an existing category.
      *
-     * @param id the ID of the category to be updated
+     * @param id                 the ID of the category to be updated
      * @param categoryRequestDTO the updated category details
      * @return the updated CategoryResponseDTO
      */
@@ -119,7 +115,7 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Update the fields of an existing category with the provided details.
      *
-     * @param existingCategory the existing category to be updated
+     * @param existingCategory   the existing category to be updated
      * @param categoryRequestDTO the updated category details
      */
     @Override
@@ -203,7 +199,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Retrieving paged categories with page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
         Page<CategoryResponseDTO> categoryPage = categoryRepository.findAll(pageable)
                 .map(category -> modelMapper.map(category, CategoryResponseDTO.class));
-        log.info("Retrieved page {} of {} with {} categories", 
+        log.info("Retrieved page {} of {} with {} categories",
                 categoryPage.getNumber(), categoryPage.getTotalPages(), categoryPage.getNumberOfElements());
         return categoryPage;
     }
@@ -211,18 +207,18 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * Find categories containing the given name with pagination.
      *
-     * @param name the name to search for
+     * @param name     the name to search for
      * @param pageable pagination information
      * @return a page of CategoryResponseDTO
      */
     @Override
     public Page<CategoryResponseDTO> searchCategoriesByNamePaged(String name, Pageable pageable) {
-        log.info("Searching paged categories by name: {} with page: {}, size: {}", 
+        log.info("Searching paged categories by name: {} with page: {}, size: {}",
                 name, pageable.getPageNumber(), pageable.getPageSize());
         Page<Category> categoryPage = categoryRepository.findByNameContaining(name, pageable);
         Page<CategoryResponseDTO> result = categoryPage
                 .map(category -> modelMapper.map(category, CategoryResponseDTO.class));
-        log.info("Found page {} of {} with {} categories matching name: {}", 
+        log.info("Found page {} of {} with {} categories matching name: {}",
                 result.getNumber(), result.getTotalPages(), result.getNumberOfElements(), name);
         return result;
     }
@@ -231,7 +227,7 @@ public class CategoryServiceImpl implements CategoryService {
      * Get all products in a specific category with pagination.
      *
      * @param categoryId the ID of the category
-     * @param pageable pagination information
+     * @param pageable   pagination information
      * @return a page of ProductResponseDTO
      */
     @Override
@@ -264,20 +260,20 @@ public class CategoryServiceImpl implements CategoryService {
 
         // Create pageable with sorting
         Pageable pageable = PageRequest.of(
-            filter.getPage(), 
-            filter.getSize(),
-            Sort.by(filter.getSortDirection(), filter.getSortBy())
+                filter.getPage(),
+                filter.getSize(),
+                Sort.by(filter.getSortDirection(), filter.getSortBy())
         );
 
         // Apply specification and pagination
         Page<Category> categoryPage = categoryRepository.findAll(
-            CategorySpecification.getCategorySpecification(filter), 
-            pageable
+                CategorySpecification.getCategorySpecification(filter),
+                pageable
         );
 
         // Map to DTOs
         Page<CategoryResponseDTO> responsePage = categoryPage.map(
-            category -> modelMapper.map(category, CategoryResponseDTO.class)
+                category -> modelMapper.map(category, CategoryResponseDTO.class)
         );
 
         log.info("Filtered {} categories (page {} of {})",
@@ -300,20 +296,20 @@ public class CategoryServiceImpl implements CategoryService {
 
         // Create pageable with sorting
         Pageable pageable = PageRequest.of(
-            filter.getPage(), 
-            filter.getSize(),
-            Sort.by(filter.getSortDirection(), filter.getSortBy())
+                filter.getPage(),
+                filter.getSize(),
+                Sort.by(filter.getSortDirection(), filter.getSortBy())
         );
 
         // Apply specification and pagination
         Slice<Category> categorySlice = categoryRepository.findAll(
-            CategorySpecification.getCategorySpecification(filter), 
-            pageable
+                CategorySpecification.getCategorySpecification(filter),
+                pageable
         );
 
         // Map to DTOs
         Slice<CategoryResponseDTO> responseSlice = categorySlice.map(
-            category -> modelMapper.map(category, CategoryResponseDTO.class)
+                category -> modelMapper.map(category, CategoryResponseDTO.class)
         );
 
         log.info("Filtered {} categories (slice page {})",

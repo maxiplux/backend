@@ -54,7 +54,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 
     /**
      * Generates a unique correlation ID.
-     * 
+     *
      * @return a unique correlation ID
      */
     private String generateCorrelationId() {

@@ -3,14 +3,13 @@ package app.quantun.backend.controller;
 import app.quantun.backend.exception.CategoryNotFoundException;
 import app.quantun.backend.models.contract.request.CategoryRequestDTO;
 import app.quantun.backend.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/categories")
@@ -33,8 +32,8 @@ public class CategoryController {
 
     @PostMapping
     public String createCategory(@Valid @ModelAttribute("category") CategoryRequestDTO category,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes) {
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "categories/form";
         }
@@ -53,9 +52,9 @@ public class CategoryController {
 
     @PostMapping("/{id}")
     public String updateCategory(@PathVariable Long id,
-                                @Valid @ModelAttribute("category") CategoryRequestDTO category,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes) {
+                                 @Valid @ModelAttribute("category") CategoryRequestDTO category,
+                                 BindingResult result,
+                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "categories/form";
         }

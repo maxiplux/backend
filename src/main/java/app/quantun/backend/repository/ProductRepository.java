@@ -1,11 +1,9 @@
 package app.quantun.backend.repository;
 
-import app.quantun.backend.models.entity.Category;
 import app.quantun.backend.models.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -35,7 +33,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products containing the given name with pagination.
      *
-     * @param name the name to search for
+     * @param name     the name to search for
      * @param pageable pagination information
      * @return a page of products containing the given name
      */
@@ -52,7 +50,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products priced below a given value with pagination.
      *
-     * @param price the maximum price
+     * @param price    the maximum price
      * @param pageable pagination information
      * @return a page of products priced below the given value
      */
@@ -69,7 +67,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products that are currently in stock with pagination.
      *
-     * @param inStock indicates whether the product is in stock
+     * @param inStock  indicates whether the product is in stock
      * @param pageable pagination information
      * @return a page of products that are in stock
      */
@@ -79,7 +77,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products containing the given name with slice-based pagination.
      *
-     * @param name the name to search for
+     * @param name     the name to search for
      * @param pageable pagination information
      * @return a slice of products containing the given name
      */
@@ -88,7 +86,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products priced below a given value with slice-based pagination.
      *
-     * @param price the maximum price
+     * @param price    the maximum price
      * @param pageable pagination information
      * @return a slice of products priced below the given value
      */
@@ -97,7 +95,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
     /**
      * Find products that are currently in stock with slice-based pagination.
      *
-     * @param inStock indicates whether the product is in stock
+     * @param inStock  indicates whether the product is in stock
      * @param pageable pagination information
      * @return a slice of products that are in stock
      */
@@ -108,7 +106,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
      * This method uses JPQL to query the database directly.
      *
      * @param categoryId The ID of the category to filter by
-     * @param pageable Pagination parameters
+     * @param pageable   Pagination parameters
      * @return A slice of products in the specified category
      */
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId")
@@ -119,11 +117,11 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
      * This method uses JPQL with multiple optional filter parameters.
      *
      * @param categoryId The ID of the category to filter by
-     * @param name Optional name filter (case insensitive, partial match)
-     * @param minPrice Optional minimum price filter
-     * @param maxPrice Optional maximum price filter
-     * @param inStock Optional in-stock status filter
-     * @param pageable Pagination parameters
+     * @param name       Optional name filter (case insensitive, partial match)
+     * @param minPrice   Optional minimum price filter
+     * @param maxPrice   Optional maximum price filter
+     * @param inStock    Optional in-stock status filter
+     * @param pageable   Pagination parameters
      * @return A slice of products matching all criteria
      */
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId " +
@@ -144,7 +142,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
      * This query uses JOIN FETCH to reduce the N+1 query problem.
      *
      * @param categoryId The ID of the category to filter by
-     * @param pageable Pagination parameters
+     * @param pageable   Pagination parameters
      * @return A slice of products in the specified category with category data loaded
      */
     @Query("SELECT p FROM Product p JOIN FETCH p.category c WHERE c.id = :categoryId")
@@ -155,7 +153,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
      * This demonstrates custom ordering in JPQL.
      *
      * @param categoryId The ID of the category to filter by
-     * @param pageable Pagination parameters (additional to the built-in sorting)
+     * @param pageable   Pagination parameters (additional to the built-in sorting)
      * @return A slice of products ordered by in-stock status (in-stock first)
      */
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId ORDER BY p.inStock DESC")
@@ -167,7 +165,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
      *
      * @param categoryId The ID of the category to filter by
      * @param searchTerm Optional search term to look for in name or description
-     * @param pageable Pagination parameters
+     * @param pageable   Pagination parameters
      * @return A slice of products matching the search criteria
      */
     @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId " +
@@ -178,7 +176,7 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
             @Param("searchTerm") String searchTerm,
             Pageable pageable);
 
-    @EntityGraph(attributePaths = {"category"})
-    @Query("SELECT p FROM Product p") // Adding a base query
-    Slice<Product> findAllWithCategory(Specification<Product> specification, Pageable pageable);
+    //@EntityGraph(attributePaths = {"category"})
+    //@Query("SELECT p FROM Product p") // Adding a base query
+    //Slice<Product> findAllWithCategory(Specification<Product> specification, Pageable pageable);
 }

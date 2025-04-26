@@ -12,14 +12,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -30,9 +27,11 @@ import java.util.List;
  * This class provides endpoints for CRUD operations on products.
  */
 @RestController
+@Validated
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "Operations for managing products")
+
 public class ProductRestController {
     private final ProductService productService;
 
@@ -57,9 +56,9 @@ public class ProductRestController {
     /**
      * Retrieve a paged list of all products.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of ProductResponseDTO
      */
@@ -135,7 +134,7 @@ public class ProductRestController {
     /**
      * Update details of an existing product.
      *
-     * @param id the ID of the product to be updated
+     * @param id                the ID of the product to be updated
      * @param productRequestDTO the updated product details
      * @return the updated ProductResponseDTO
      */
@@ -197,10 +196,10 @@ public class ProductRestController {
     /**
      * Find products containing the given name with pagination.
      *
-     * @param name the name to search for
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param name      the name to search for
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of ProductResponseDTO
      */
@@ -253,10 +252,10 @@ public class ProductRestController {
     /**
      * Retrieve products priced below a given value with pagination.
      *
-     * @param price the maximum price
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param price     the maximum price
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of ProductResponseDTO
      */
@@ -306,9 +305,9 @@ public class ProductRestController {
     /**
      * Retrieve all products that are currently in stock with pagination.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sort the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sort      the field to sort by
      * @param direction the sort direction
      * @return a page of ProductResponseDTO
      */

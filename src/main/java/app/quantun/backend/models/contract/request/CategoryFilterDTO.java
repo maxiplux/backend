@@ -1,5 +1,6 @@
 package app.quantun.backend.models.contract.request;
 
+import app.quantun.backend.models.contract.validator.AtLeastOneFieldRequired;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
@@ -13,8 +14,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@AtLeastOneFieldRequired(fields = {"name", "description"})
 public class CategoryFilterDTO {
-    @Size(max = 255, message = "Name must be less than 255 characters")
+    //@Size(max = 255, message = "Name must be less than 255 characters")
     private String name;
 
     @Size(max = 1000, message = "Description must be less than 1000 characters")
