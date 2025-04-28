@@ -13,6 +13,7 @@ import static app.quantun.backend.config.logging.CorrelationIdConstants.CORRELAT
 @Configuration
 public class RestClientConfig {
 
+
     /**
      * Creates a RestClient.Builder bean that automatically adds the correlation ID
      * to outgoing requests if it exists in the MDC.

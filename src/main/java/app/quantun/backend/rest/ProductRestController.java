@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RestController
 @Validated
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 @Tag(name = "Product Management", description = "Operations for managing products")
 

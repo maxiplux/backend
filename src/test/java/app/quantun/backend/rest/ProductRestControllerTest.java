@@ -72,7 +72,7 @@ public class ProductRestControllerTest {
 
         when(productService.getAllProducts()).thenReturn(products);
 
-        mockMvc.perform(get("/api/products")
+        mockMvc.perform(get("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -91,7 +91,7 @@ public class ProductRestControllerTest {
         // Wrap the response in Optional.of()
         when(productService.getProductById(productId)).thenReturn(Optional.of(sampleProductResponse));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/products/{id}", productId)
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -108,7 +108,7 @@ public class ProductRestControllerTest {
         when(productService.createProduct(any(ProductRequestDTO.class)))
                 .thenReturn(sampleProductResponse);
 
-        mockMvc.perform(post("/api/products")
+        mockMvc.perform(post("/api/v1/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleProductRequest)))
                 .andExpect(status().isCreated())
@@ -128,7 +128,7 @@ public class ProductRestControllerTest {
         when(productService.updateProduct(eq(productId), any(ProductRequestDTO.class)))
                 .thenReturn(sampleProductResponse);
 
-        mockMvc.perform(put("/api/products/{id}", productId)
+        mockMvc.perform(put("/api/v1/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleProductRequest)))
                 .andExpect(status().isOk())
@@ -148,7 +148,7 @@ public class ProductRestControllerTest {
 
         when(productService.searchProductsByName(searchName)).thenReturn(products);
 
-        mockMvc.perform(get("/api/products/search")
+        mockMvc.perform(get("/api/v1/products/search")
                         .param("name", searchName)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -167,7 +167,7 @@ public class ProductRestControllerTest {
 
         when(productService.getProductsUnderPrice(maxPrice)).thenReturn(products);
 
-        mockMvc.perform(get("/api/products/under-price")
+        mockMvc.perform(get("/api/v1/products/under-price")
                         .param("price", "20")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -185,7 +185,7 @@ public class ProductRestControllerTest {
 
         when(productService.getInStockProducts()).thenReturn(products);
 
-        mockMvc.perform(get("/api/products/in-stock")
+        mockMvc.perform(get("/api/v1/products/in-stock")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

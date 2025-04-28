@@ -1,4 +1,4 @@
-package app.quantun.backend.service;
+package app.quantun.backend.service.impl;
 
 import app.quantun.backend.exception.ProductNotFoundException;
 import app.quantun.backend.models.contract.request.ProductFilterDTO;
@@ -7,9 +7,12 @@ import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.ProductRepository;
 import app.quantun.backend.repository.specification.ProductSpecification;
+import app.quantun.backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,7 @@ public class ProductServiceImpl implements ProductService {
      * @return an Optional containing the ProductResponseDTO if found, otherwise empty
      */
     @Override
+    @Cacheable(value = "products", key = "#id")
     public Optional<ProductResponseDTO> getProductById(Long id) {
         log.info("Retrieving product with id: {}", id);
         Optional<ProductResponseDTO> product = productRepository.findById(id)
@@ -146,6 +150,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Transactional
     @Override
+    @CacheEvict(value = "products", key = "#id")
     public void deleteProduct(Long id) {
         log.info("Deleting product with id: {}", id);
         Product product = productRepository.findById(id)

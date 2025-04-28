@@ -1,4 +1,4 @@
-package app.quantun.backend.service;
+package app.quantun.backend.service.impl;
 
 import app.quantun.backend.exception.CategoryNotFoundException;
 import app.quantun.backend.models.contract.request.CategoryFilterDTO;
@@ -10,6 +10,7 @@ import app.quantun.backend.models.entity.Product;
 import app.quantun.backend.repository.CategoryRepository;
 import app.quantun.backend.repository.ProductRepository;
 import app.quantun.backend.repository.specification.CategorySpecification;
+import app.quantun.backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

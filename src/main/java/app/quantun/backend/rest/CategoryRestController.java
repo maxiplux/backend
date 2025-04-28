@@ -28,7 +28,7 @@ import java.util.List;
  */
 @RestController
 @Validated
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 @Tag(name = "Category Management", description = "Operations for managing categories")
 
