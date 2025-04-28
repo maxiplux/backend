@@ -1,5 +1,6 @@
 package app.quantun.backend.config;
 
+import app.quantun.backend.exception.DataInitializationException;
 import app.quantun.backend.models.contract.request.CategoryRequestDTO;
 import app.quantun.backend.models.contract.response.CategoryResponseDTO;
 import app.quantun.backend.models.entity.Category;
@@ -17,7 +18,9 @@ import org.springframework.context.annotation.Profile;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Configuration class for initializing sample data for the application.
@@ -28,6 +31,8 @@ import java.util.Map;
 @Slf4j
 public class DataInitializer {
 
+    private static final String DATA_VERSION = "1.0"; // For tracking data initialization versions
+    
     private final CategoryService categoryService;
     private final ProductService productService;
     private final CategoryRepository categoryRepository;
@@ -43,21 +48,26 @@ public class DataInitializer {
     @Profile("!test") // Don't run in test profile
     public CommandLineRunner initData() {
         return args -> {
-            log.info("Starting data initialization...");
+            try {
+                log.info("Starting data initialization with version {}", DATA_VERSION);
 
-            // Check if data already exists
-            if (categoryRepository.count() > 0 || productRepository.count() > 0) {
-                log.info("Data already exists, skipping initialization");
-                return;
+                // Check if data already exists
+                if (categoryRepository.count() > 0 || productRepository.count() > 0) {
+                    log.info("Data already exists, skipping initialization");
+                    return;
+                }
+
+                // Create categories
+                Map<String, CategoryResponseDTO> categories = createCategories();
+
+                // Create products
+                createProducts(categories);
+
+                log.info("Data initialization completed successfully");
+            } catch (Exception e) {
+                log.error("Error during data initialization: {}", e.getMessage(), e);
+                throw new DataInitializationException("Failed to initialize sample data", e);
             }
-
-            // Create categories
-            Map<String, CategoryResponseDTO> categories = createCategories();
-
-            // Create products
-            createProducts(categories);
-
-            log.info("Data initialization completed successfully");
         };
     }
 
@@ -70,37 +80,36 @@ public class DataInitializer {
         log.info("Creating sample categories...");
 
         Map<String, CategoryResponseDTO> categories = new HashMap<>();
+        List<CategoryRequestDTO> categoryRequests = List.of(
+            buildCategoryRequest("Electronics", "Electronic devices and accessories"),
+            buildCategoryRequest("Clothing", "Apparel and fashion items"),
+            buildCategoryRequest("Books", "Books, e-books, and publications"),
+            buildCategoryRequest("Home & Kitchen", "Home appliances and kitchen essentials")
+        );
 
-        // Electronics category
-        CategoryRequestDTO electronics = CategoryRequestDTO.builder()
-                .name("Electronics")
-                .description("Electronic devices and accessories")
-                .build();
-        categories.put("Electronics", categoryService.createCategory(electronics));
-
-        // Clothing category
-        CategoryRequestDTO clothing = CategoryRequestDTO.builder()
-                .name("Clothing")
-                .description("Apparel and fashion items")
-                .build();
-        categories.put("Clothing", categoryService.createCategory(clothing));
-
-        // Books category
-        CategoryRequestDTO books = CategoryRequestDTO.builder()
-                .name("Books")
-                .description("Books, e-books, and publications")
-                .build();
-        categories.put("Books", categoryService.createCategory(books));
-
-        // Home & Kitchen category
-        CategoryRequestDTO homeKitchen = CategoryRequestDTO.builder()
-                .name("Home & Kitchen")
-                .description("Home appliances and kitchen essentials")
-                .build();
-        categories.put("Home & Kitchen", categoryService.createCategory(homeKitchen));
+        for (CategoryRequestDTO request : categoryRequests) {
+            try {
+                CategoryResponseDTO response = categoryService.createCategory(request);
+                categories.put(request.getName(), response);
+                log.debug("Created category: {}", request.getName());
+            } catch (Exception e) {
+                log.error("Failed to create category {}: {}", request.getName(), e.getMessage());
+                throw new DataInitializationException("Failed to create category: " + request.getName(), e);
+            }
+        }
 
         log.info("Created {} categories", categories.size());
         return categories;
+    }
+
+    /**
+     * Helper method to build a CategoryRequestDTO.
+     */
+    private CategoryRequestDTO buildCategoryRequest(String name, String description) {
+        return CategoryRequestDTO.builder()
+                .name(name)
+                .description(description)
+                .build();
     }
 
     /**
@@ -111,22 +120,21 @@ public class DataInitializer {
     private void createProducts(Map<String, CategoryResponseDTO> categories) {
         log.info("Creating sample products...");
 
-        // Since ProductRequestDTO doesn't have a category field, we need to create the Product entities directly
-        // and set their category before saving them
-
-        // Electronics products
-        createElectronicsProducts(categories.get("Electronics").getId());
-
-        // Clothing products
-        createClothingProducts(categories.get("Clothing").getId());
-
-        // Books products
-        createBooksProducts(categories.get("Books").getId());
-
-        // Home & Kitchen products
-        createHomeKitchenProducts(categories.get("Home & Kitchen").getId());
+        createElectronicsProducts(getCategoryId(categories, "Electronics"));
+        createClothingProducts(getCategoryId(categories, "Clothing"));
+        createBooksProducts(getCategoryId(categories, "Books"));
+        createHomeKitchenProducts(getCategoryId(categories, "Home & Kitchen"));
 
         log.info("Created products for all categories");
+    }
+
+    /**
+     * Helper method to get category ID with error handling.
+     */
+    private Long getCategoryId(Map<String, CategoryResponseDTO> categories, String categoryName) {
+        return Optional.ofNullable(categories.get(categoryName))
+                .map(CategoryResponseDTO::getId)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryName));
     }
 
     /**
@@ -135,37 +143,15 @@ public class DataInitializer {
      * @param categoryId the ID of the Electronics category
      */
     private void createElectronicsProducts(Long categoryId) {
-        // Find the category
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = getCategoryById(categoryId);
 
-        // Create products
-        Product smartphone = new Product();
-        smartphone.setName("Smartphone X");
-        smartphone.setDescription("Latest smartphone with advanced features");
-        smartphone.setPrice(new BigDecimal("999.99"));
-        smartphone.setInStock(true);
-        smartphone.setStock(50);
-        smartphone.setCategory(category);
-        productRepository.save(smartphone);
+        List<ProductData> products = List.of(
+            new ProductData("Smartphone X", "Latest smartphone with advanced features", "999.99", 50),
+            new ProductData("Laptop Pro", "High-performance laptop for professionals", "1499.99", 30),
+            new ProductData("Wireless Headphones", "Noise-cancelling wireless headphones", "199.99", 100)
+        );
 
-        Product laptop = new Product();
-        laptop.setName("Laptop Pro");
-        laptop.setDescription("High-performance laptop for professionals");
-        laptop.setPrice(new BigDecimal("1499.99"));
-        laptop.setInStock(true);
-        laptop.setStock(30);
-        laptop.setCategory(category);
-        productRepository.save(laptop);
-
-        Product headphones = new Product();
-        headphones.setName("Wireless Headphones");
-        headphones.setDescription("Noise-cancelling wireless headphones");
-        headphones.setPrice(new BigDecimal("199.99"));
-        headphones.setInStock(true);
-        headphones.setStock(100);
-        headphones.setCategory(category);
-        productRepository.save(headphones);
+        saveProducts(products, category);
     }
 
     /**
@@ -174,37 +160,15 @@ public class DataInitializer {
      * @param categoryId the ID of the Clothing category
      */
     private void createClothingProducts(Long categoryId) {
-        // Find the category
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = getCategoryById(categoryId);
 
-        // Create products
-        Product tShirt = new Product();
-        tShirt.setName("Cotton T-Shirt");
-        tShirt.setDescription("Comfortable cotton t-shirt in various colors");
-        tShirt.setPrice(new BigDecimal("19.99"));
-        tShirt.setInStock(true);
-        tShirt.setStock(200);
-        tShirt.setCategory(category);
-        productRepository.save(tShirt);
+        List<ProductData> products = List.of(
+            new ProductData("Cotton T-Shirt", "Comfortable cotton t-shirt in various colors", "19.99", 200),
+            new ProductData("Slim Fit Jeans", "Classic slim fit jeans for everyday wear", "49.99", 150),
+            new ProductData("Winter Jacket", "Warm winter jacket with water-resistant exterior", "129.99", 75)
+        );
 
-        Product jeans = new Product();
-        jeans.setName("Slim Fit Jeans");
-        jeans.setDescription("Classic slim fit jeans for everyday wear");
-        jeans.setPrice(new BigDecimal("49.99"));
-        jeans.setInStock(true);
-        jeans.setStock(150);
-        jeans.setCategory(category);
-        productRepository.save(jeans);
-
-        Product jacket = new Product();
-        jacket.setName("Winter Jacket");
-        jacket.setDescription("Warm winter jacket with water-resistant exterior");
-        jacket.setPrice(new BigDecimal("129.99"));
-        jacket.setInStock(true);
-        jacket.setStock(75);
-        jacket.setCategory(category);
-        productRepository.save(jacket);
+        saveProducts(products, category);
     }
 
     /**
@@ -213,37 +177,15 @@ public class DataInitializer {
      * @param categoryId the ID of the Books category
      */
     private void createBooksProducts(Long categoryId) {
-        // Find the category
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = getCategoryById(categoryId);
 
-        // Create products
-        Product novel = new Product();
-        novel.setName("Bestselling Novel");
-        novel.setDescription("Award-winning fiction novel by renowned author");
-        novel.setPrice(new BigDecimal("14.99"));
-        novel.setInStock(true);
-        novel.setStock(300);
-        novel.setCategory(category);
-        productRepository.save(novel);
+        List<ProductData> products = List.of(
+            new ProductData("Bestselling Novel", "Award-winning fiction novel by renowned author", "14.99", 300),
+            new ProductData("Gourmet Cookbook", "Collection of gourmet recipes from around the world", "29.99", 120),
+            new ProductData("Computer Science Textbook", "Comprehensive guide to computer science principles", "79.99", 0, false)
+        );
 
-        Product cookbook = new Product();
-        cookbook.setName("Gourmet Cookbook");
-        cookbook.setDescription("Collection of gourmet recipes from around the world");
-        cookbook.setPrice(new BigDecimal("29.99"));
-        cookbook.setInStock(true);
-        cookbook.setStock(120);
-        cookbook.setCategory(category);
-        productRepository.save(cookbook);
-
-        Product textbook = new Product();
-        textbook.setName("Computer Science Textbook");
-        textbook.setDescription("Comprehensive guide to computer science principles");
-        textbook.setPrice(new BigDecimal("79.99"));
-        textbook.setInStock(false);
-        textbook.setStock(0);
-        textbook.setCategory(category);
-        productRepository.save(textbook);
+        saveProducts(products, category);
     }
 
     /**
@@ -252,36 +194,67 @@ public class DataInitializer {
      * @param categoryId the ID of the Home & Kitchen category
      */
     private void createHomeKitchenProducts(Long categoryId) {
-        // Find the category
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = getCategoryById(categoryId);
 
-        // Create products
-        Product blender = new Product();
-        blender.setName("High-Speed Blender");
-        blender.setDescription("Powerful blender for smoothies and food preparation");
-        blender.setPrice(new BigDecimal("89.99"));
-        blender.setInStock(true);
-        blender.setStock(60);
-        blender.setCategory(category);
-        productRepository.save(blender);
+        List<ProductData> products = List.of(
+            new ProductData("High-Speed Blender", "Powerful blender for smoothies and food preparation", "89.99", 60),
+            new ProductData("Programmable Coffee Maker", "Automatic coffee maker with timer and multiple settings", "59.99", 45),
+            new ProductData("4-Slice Toaster", "Stainless steel toaster with multiple browning settings", "39.99", 80)
+        );
 
-        Product coffeemaker = new Product();
-        coffeemaker.setName("Programmable Coffee Maker");
-        coffeemaker.setDescription("Automatic coffee maker with timer and multiple settings");
-        coffeemaker.setPrice(new BigDecimal("59.99"));
-        coffeemaker.setInStock(true);
-        coffeemaker.setStock(45);
-        coffeemaker.setCategory(category);
-        productRepository.save(coffeemaker);
+        saveProducts(products, category);
+    }
 
-        Product toaster = new Product();
-        toaster.setName("4-Slice Toaster");
-        toaster.setDescription("Stainless steel toaster with multiple browning settings");
-        toaster.setPrice(new BigDecimal("39.99"));
-        toaster.setInStock(true);
-        toaster.setStock(80);
-        toaster.setCategory(category);
-        productRepository.save(toaster);
+    /**
+     * Get category by ID with improved error handling.
+     */
+    private Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + categoryId));
+    }
+
+    /**
+     * Helper method to save products from ProductData objects.
+     */
+    private void saveProducts(List<ProductData> productsData, Category category) {
+        for (ProductData data : productsData) {
+            try {
+                Product product = new Product();
+                product.setName(data.name);
+                product.setDescription(data.description);
+                product.setPrice(new BigDecimal(data.price));
+                product.setInStock(data.inStock);
+                product.setStock(data.stock);
+                product.setCategory(category);
+                productRepository.save(product);
+                log.debug("Created product: {} in category: {}", data.name, category.getName());
+            } catch (Exception e) {
+                log.error("Failed to create product {}: {}", data.name, e.getMessage());
+                throw new DataInitializationException("Failed to create product: " + data.name, e);
+            }
+        }
+    }
+
+    /**
+     * Data class for product information.
+     */
+    private static class ProductData {
+        private final String name;
+        private final String description;
+        private final String price;
+        private final int stock;
+        private final boolean inStock;
+
+        public ProductData(String name, String description, String price, int stock) {
+            this(name, description, price, stock, stock > 0);
+        }
+
+        public ProductData(String name, String description, String price, int stock, boolean inStock) {
+            this.name = name;
+            this.description = description;
+            this.price = price;
+            this.stock = stock;
+            this.inStock = inStock;
+        }
     }
 }
