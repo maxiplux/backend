@@ -732,6 +732,38 @@ If your application needs to support multiple languages or regions:
 - Version your APIs appropriately to manage changes
 
 
+## Extras Code Style Guidelines
+
+- **Formatting**  
+  Use a pre-commit hook or a code formatter plugin to enforce your coding style, including line length and indentation.
+
+- **Imports**  
+  Organize imports alphabetically, avoiding wildcard or unused imports.  
+  Prefer `jakarta.*` over `javax.*`.
+
+- **Naming Conventions**
+   - Class names in PascalCase
+   - Variables and methods in camelCase
+   - Constants in UPPER\_SNAKE\_CASE
+
+- **Annotations**  
+  Use JPA annotations consistently (e.g., `@Entity`, `@Column`) and Lombok annotations (like `@Getter`, `@Setter`).  
+  Keep error handling standardized with custom exceptions or `ProblemDetail`.
+
+- **Entities**  
+  Ensure entity classes have `equals()` and `hashCode()` based on the primary key.
+
+- **Documentation**  
+  Write Javadoc for public methods.  
+  Keep comments succinct but clear for complex logic.
+
+- **Checkstyle Integration**  
+  Reference rules in `checkstyle.xml` to maintain consistent style and detect issues early in the CI pipeline.
+
+- **Build and Testing**  
+  Configure Maven to execute code quality checks.  
+  Enforce minimal test coverage and proper mocking.
+
 ## Conclusion
 
 These guidelines are designed to ensure quality, maintainability, and robustness for Spring Boot 3.4 applications. Teams should adapt these practices to their specific requirements while maintaining the core principles outlined in this document.
