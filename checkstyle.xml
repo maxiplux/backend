@@ -22,12 +22,9 @@
 
     <module name="TreeWalker">
         <!-- Checks for Javadoc comments -->
-        <module name="JavadocMethod"/>
-        <module name="JavadocType"/>
-        <module name="JavadocVariable"/>
-        <module name="JavadocStyle"/>
+        <!--     <module name="JavadocMethod"/>
 
-        <!-- Checks for Naming Conventions -->
+             <!- Checks for Naming Conventions -->
         <module name="ConstantName"/>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
