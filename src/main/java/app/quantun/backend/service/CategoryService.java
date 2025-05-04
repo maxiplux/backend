@@ -5,6 +5,7 @@ import app.quantun.backend.models.contract.request.CategoryRequestDTO;
 import app.quantun.backend.models.contract.response.CategoryResponseDTO;
 import app.quantun.backend.models.contract.response.ProductResponseDTO;
 import app.quantun.backend.models.entity.Category;
+import jakarta.validation.constraints.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -73,4 +74,6 @@ public interface CategoryService {
             Long categoryId, String name, BigDecimal minPrice, BigDecimal maxPrice, Boolean inStock, Pageable pageable);
 
     Slice<ProductResponseDTO> searchProductsByCategory(Long categoryId, String searchTerm, Pageable pageable);
+
+    boolean existsById(@Positive(message = "Category ID must be positive") Long categoryId);
 }

@@ -1,5 +1,6 @@
-package app.quantun.backend.models.contract.validator;
+package app.quantun.backend.models.contract.validator.impl;
 
+import app.quantun.backend.models.contract.validator.AtLeastOneFieldRequired;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,6 @@
 package app.quantun.backend.models.contract.request;
 
+import app.quantun.backend.models.contract.validator.ValidCategory;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidCategory
 public class ProductFilterDTO {
 
     @Size(max = 255, message = "Name must be less than 255 characters")
@@ -54,6 +56,9 @@ public class ProductFilterDTO {
     private String sortBy = "id";
 
     private Sort.Direction sortDirection = Sort.Direction.ASC;
+
+
+
 
     @AssertTrue(message = "At least one filter field must be provided")
     public boolean isAtLeastOneFieldPresent() {

@@ -221,14 +221,14 @@ Follow the test pyramid approach:
 
 ### 3.2 Working with MockBean
 
-`@MockBean` is a Spring Boot test annotation that adds Mockito mocks to the Spring ApplicationContext. It's essential for proper Spring Boot integration testing:
+`@MockitoBean` is a Spring Boot test annotation that adds Mockito mocks to the Spring ApplicationContext. It's essential for proper Spring Boot integration testing:
 
 ```java
 @SpringBootTest
 class UserServiceIntegrationTest {
     
     // Replace real bean with a mock in Spring context
-    @MockBean
+    @MockitoBean
     private UserRepository userRepository;
     
     @Autowired
@@ -261,13 +261,13 @@ class UserServiceIntegrationTest {
 
 #### Key points when working with MockBean:
 
-1. **Context Management**: `@MockBean` replaces or adds beans to the Spring context
-2. **Slower Tests**: Using `@MockBean` causes the Spring context to reload, so use sparingly
+1. **Context Management**: `@MockitoBean` replaces or adds beans to the Spring context
+2. **Slower Tests**: Using `@MockitoBean` causes the Spring context to reload, so use sparingly
 3. **Reset After Tests**: Mocks are automatically reset after each test
-4. **Bean Naming**: `@MockBean` can specify the name of the bean to replace with `name` attribute
+4. **Bean Naming**: `@MockitoBean` can specify the name of the bean to replace with `name` attribute
 5. **Verification**: Always verify important interactions with the mock
 
-### 3.3 Unit Testing with @Mock vs Integration Testing with @MockBean
+### 3.3 Unit Testing with @Mock vs Integration Testing with @MockitoBean
 
 ```java
 // Unit Testing: Lighter weight, no Spring context
@@ -291,7 +291,7 @@ class UserServiceTest {
 @SpringBootTest
 class UserServiceIntegrationTest {
     
-    @MockBean // Spring context aware, replaces the real bean
+    @MockitoBean // Spring context aware, replaces the real bean
     private UserRepository userRepository;
     
     @Autowired // Injected by Spring with the mock
@@ -314,7 +314,7 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
     
-    @MockBean // Mock the service layer
+    @MockitoBean // Mock the service layer
     private UserService userService;
     
     @Test
@@ -354,7 +354,7 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     
-    @MockBean // Mock external service used by repository
+    @MockitoBean // Mock external service used by repository
     private AuditService auditService;
     
     @Test
@@ -371,7 +371,7 @@ class UserControllerSliceTest {
     @Autowired
     private MockMvc mockMvc;
     
-    @MockBean
+    @MockitoBean
     private UserService userService;
     
     @Test

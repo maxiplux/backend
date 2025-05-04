@@ -218,3 +218,4 @@ replay_pid*
 .env!
 /.env
 /.sonarlint/connectedMode.json
+/.junie/code-review-guide-lines.md

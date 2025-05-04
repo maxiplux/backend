@@ -1,6 +1,6 @@
 package app.quantun.backend.models.contract.validator;
 
-import app.quantun.backend.models.contract.validator.impl.AtLeastOneFieldValidator;
+import app.quantun.backend.models.contract.validator.impl.CategoryExistsValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,16 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// 1. Create a custom annotation
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AtLeastOneFieldValidator.class)
-public @interface AtLeastOneFieldRequired {
-    String message() default "At least one field must be provided";
-
+@Constraint(validatedBy = CategoryExistsValidator.class)
+public @interface ValidCategory {
+    String message() default "Category does not exist";
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
-
-    String[] fields();
 }

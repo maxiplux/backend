@@ -351,4 +351,10 @@ public class CategoryServiceImpl implements CategoryService {
         // Map to DTOs
         return productSlice.map(product -> modelMapper.map(product, ProductResponseDTO.class));
     }
+
+    @Override
+    public boolean existsById(Long categoryId) {
+
+        return this.categoryRepository.existsById(categoryId);
+    }
 }

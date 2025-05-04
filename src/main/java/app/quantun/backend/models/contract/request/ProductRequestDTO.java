@@ -1,5 +1,6 @@
 package app.quantun.backend.models.contract.request;
 
+import app.quantun.backend.models.contract.validator.ValidBase64FileSize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -21,7 +22,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ProductRequestDTO {
 
-    private Long id;
+
     /**
      * The name of the product.
      * It must not be blank and its length must not exceed 255 characters.
@@ -55,4 +56,7 @@ public class ProductRequestDTO {
      */
     @PositiveOrZero(message = "{product.stock.positive}")
     private int stock;
+
+    @ValidBase64FileSize(maxSizeBytes = 5 * 1024 * 1024, message = "File size must not exceed 1MB")
+    private String base64File;
 }
